@@ -1,0 +1,13 @@
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'CHRadarGraph_Example', :exclusive => true do
+  pod 'CHRadarGraph', :path => '../'
+end
+
+target 'CHRadarGraph_Tests', :exclusive => true do
+  pod 'CHRadarGraph', :path => '../'
+
+  pod 'Quick', '~> 0.8'
+  pod 'Nimble', '~> 3.0'
+end
