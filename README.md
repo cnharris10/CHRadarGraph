@@ -10,6 +10,11 @@
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
+* iOS 9+
+* Swift 2.2+
+
+## Example
+![alt text](http://postimg.org/image/ut451z3tp/b325f947/ "Radar Graph")
 
 ## Installation
 
