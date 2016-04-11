@@ -17,9 +17,9 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 * Documentation :)
 * Unit Tests
 * Features:
-** More control over label offsets
-** Shadows / Patterns within Sectors
-** Apple Watch support
+  * More control over label offsets
+  * Shadows / Patterns within Sectors
+  * Apple Watch support
 
 ## Example
 ![alt text](http://i.imgur.com/xEUetr6.png?1 "Radar Graph")
