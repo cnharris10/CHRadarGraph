@@ -14,7 +14,7 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 * Swift 2.2+
 
 ## Example
-![alt text](http://postimg.org/image/ut451z3tp/b325f947/ "Radar Graph")
+![alt text](http://i.imgur.com/xEUetr6.png?1 "Radar Graph")
 
 ## Installation
 
