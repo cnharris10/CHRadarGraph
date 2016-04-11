@@ -22,7 +22,7 @@ pod "CHRadarGraph"
 
 ## Author
 
-Christopher Harris, chris@neumitra.com
+Christopher Harris, cnharris@gmail.com
 
 ## License
 
