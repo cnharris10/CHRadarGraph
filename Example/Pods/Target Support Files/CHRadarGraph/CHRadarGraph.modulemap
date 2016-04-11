@@ -1,0 +1,6 @@
+framework module CHRadarGraph {
+  umbrella header "CHRadarGraph-umbrella.h"
+
+  export *
+  module * { export * }
+}
