@@ -28,8 +28,8 @@ public protocol CHRadarGraphViewDataSource {
     func radiusOfGraph(graphView: CHRadarGraphView) -> CGFloat
     func largestHeightForSectorCell(graphView: CHRadarGraphView) -> CGFloat
     func numberOfSectors(graphView: CHRadarGraphView) -> Int
-    func numberOfRings(graphView: CHRadarGraphView) -> Int
     func numberOfDataSectors(graphView: CHRadarGraphView) -> Int
+    func numberOfRings(graphView: CHRadarGraphView) -> Int
     func startingAngleInDegrees(graphView: CHRadarGraphView) -> CGFloat
     func sectorCellForPositionAtIndex(graph: CHRadarGraphView, index: Int) -> CHSectorCell?
     func backgroundColorOfGraph(graphView: CHRadarGraphView) -> UIColor

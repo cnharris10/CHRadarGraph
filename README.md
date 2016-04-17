@@ -1,6 +1,5 @@
 # CHRadarGraph
 
-[![CI Status](http://img.shields.io/travis/Christopher Harris/CHRadarGraph.svg?style=flat)](https://travis-ci.org/Christopher Harris/CHRadarGraph)
 [![Version](https://img.shields.io/cocoapods/v/CHRadarGraph.svg?style=flat)](http://cocoapods.org/pods/CHRadarGraph)
 [![License](https://img.shields.io/cocoapods/l/CHRadarGraph.svg?style=flat)](http://cocoapods.org/pods/CHRadarGraph)
 [![Platform](https://img.shields.io/cocoapods/p/CHRadarGraph.svg?style=flat)](http://cocoapods.org/pods/CHRadarGraph)
@@ -14,7 +13,6 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 * Swift 2.2+
 
 ## Coming shortly...
-* Documentation :)
 * Unit Tests
 * Features:
   * More control over label offsets
@@ -30,7 +28,7 @@ CHRadarGraph is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```
-pod "CHRadarGraph", "~> 0.1.1"
+pod "CHRadarGraph", "~> 0.1.2"
 ```
 
 ## Changelog
@@ -103,6 +101,7 @@ Stroke colors and line widths:
     func strokeColorOfSectorLines(graphView: CHRadarGraphView) -> UIColor
     func strokeWidthOfSectorLines(graphView: CHRadarGraphView) -> CGFloat
 
+![alt text](http://i.imgur.com/PYd1AMS.png?1 "Radar Graph Explained")
 
 ## Author
 
