@@ -95,14 +95,6 @@ class ViewController: UIViewController {
 
 extension ViewController: CHRadarGraphViewDataSource {
 
-    func positionOfGraph(graphView: CHRadarGraphView) -> CGPoint {
-        return CGPointZero
-    }
-
-    func sizeOfGraph(graphView: CHRadarGraphView) -> CGSize {
-        return CGSize(width: 1000, height: 1000)
-    }
-
     func centerOfGraph(graphView: CHRadarGraphView) -> CGPoint {
         return CGPointMake(500, 500)
     }

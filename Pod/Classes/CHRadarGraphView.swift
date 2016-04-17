@@ -24,21 +24,19 @@ public protocol CHRadarGraphViewDelegate {
 }
 
 public protocol CHRadarGraphViewDataSource {
-    func positionOfGraph(graphView: CHRadarGraphView) -> CGPoint
-    func sizeOfGraph(graphView: CHRadarGraphView) -> CGSize
     func centerOfGraph(graphView: CHRadarGraphView) -> CGPoint
     func radiusOfGraph(graphView: CHRadarGraphView) -> CGFloat
     func largestHeightForSectorCell(graphView: CHRadarGraphView) -> CGFloat
     func numberOfSectors(graphView: CHRadarGraphView) -> Int
     func numberOfRings(graphView: CHRadarGraphView) -> Int
     func numberOfDataSectors(graphView: CHRadarGraphView) -> Int
+    func startingAngleInDegrees(graphView: CHRadarGraphView) -> CGFloat
+    func sectorCellForPositionAtIndex(graph: CHRadarGraphView, index: Int) -> CHSectorCell?
     func backgroundColorOfGraph(graphView: CHRadarGraphView) -> UIColor
     func strokeColorOfRings(graphView: CHRadarGraphView) -> UIColor
     func strokeWidthOfRings(graphView: CHRadarGraphView) -> CGFloat
     func strokeColorOfSectorLines(graphView: CHRadarGraphView) -> UIColor
     func strokeWidthOfSectorLines(graphView: CHRadarGraphView) -> CGFloat
-    func startingAngleInDegrees(graphView: CHRadarGraphView) -> CGFloat
-    func sectorCellForPositionAtIndex(graph: CHRadarGraphView, index: Int) -> CHSectorCell?
 }
 
 public struct CHRadarGraphView {
@@ -74,8 +72,15 @@ public struct CHRadarGraphView {
         sectorsDataCount = CGFloat(dataSource.numberOfDataSectors(self) ?? CHRadarGraphDefaultValues.Sector.count)
         center = dataSource.centerOfGraph(self) ?? CHRadarGraphDefaultValues.Graph.center
         radius = dataSource.radiusOfGraph(self) ?? CHRadarGraphDefaultValues.Graph.radius
-        position = dataSource.positionOfGraph(self) ?? CHRadarGraphDefaultValues.Graph.postion
-        size = dataSource.sizeOfGraph(self) ?? CHRadarGraphDefaultValues.Graph.size
+
+        let x = center.x - radius
+        let y = center.y - radius
+        position = CGPoint(x: x, y: y)
+
+        let width = center.x + radius - position.x
+        let height = center.y + radius - position.y
+        size = CGSize(width: width, height: height)
+
         backgroundColor = dataSource.backgroundColorOfGraph(self) ?? CHRadarGraphDefaultValues.Graph.backgroundColor
         strokeColorOfSectorLines = dataSource.strokeColorOfSectorLines(self) ?? CHRadarGraphDefaultValues.Sector.strokeColorOfSectorLines
         strokeWidthOfSectorLines = dataSource.strokeWidthOfSectorLines(self) ?? CHRadarGraphDefaultValues.Sector.strokeWidthOfSectorLines

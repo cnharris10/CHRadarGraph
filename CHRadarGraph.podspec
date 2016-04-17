@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "CHRadarGraph"
-  s.version          = "0.1.0"
+  s.version          = "0.1.1"
   s.summary          = "Create a circular bar graph."
 
 # This description is used to generate tags and improve search results.
@@ -35,7 +35,5 @@ Pod::Spec.new do |s|
     'CHRadarGraph' => ['Pod/Assets/*.png']
   }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'UIKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end
