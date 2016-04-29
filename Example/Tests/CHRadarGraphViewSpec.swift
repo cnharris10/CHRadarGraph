@@ -1,6 +1,6 @@
 import Quick
 import Nimble
-import CHRadarGraph
+@testable import CHRadarGraph
 
 class CHGraphViewSpec: QuickSpec {
 
@@ -8,14 +8,78 @@ class CHGraphViewSpec: QuickSpec {
         describe("CHRadarGraphView") {
 
             var testViewController: TestViewController!
+            var view: UIView!
+            var dataSource: CHRadarGraphViewDataSource!
+            var delegate: CHRadarGraphViewDelegate!
 
             beforeEach {
                 testViewController = TestViewController()
-                testViewController.graph?.reload()
+                view = testViewController!.view
+                dataSource = testViewController.graph!.dataSource
+                delegate = testViewController.graph!.delegate
             }
 
-            it("will load a CHRadarGraphView") {
-                expect(testViewController.view).notTo(beNil())
+            context("#init") {
+                it("will load a CHRadarGraphView") {
+                    let graph = testViewController!.graph
+                    expect(graph!.view).to(beAKindOf(UIView))
+                    expect(graph!.delegate).to(beTruthy())
+                    expect(graph!.dataSource).to(beTruthy())
+                    expect(graph!.startAngle) == CHRadarGraphView.degreesToRadians(dataSource.startingAngleInDegrees(graph!))
+                    expect(graph!.largestHeight) == dataSource.largestHeightForSectorCell(graph!)
+                    expect(graph!.numberOfRings) == dataSource.numberOfRings(graph!)
+                    expect(graph!.sectorsCount as NSNumber) == dataSource.numberOfSectors(graph!)
+                    expect(graph!.sectorsDataCount as NSNumber) == dataSource.numberOfDataSectors(graph!)
+                    expect(graph!.center) == dataSource.centerOfGraph(graph!)
+                    expect(graph!.radius) == dataSource.radiusOfGraph(graph!)
+                    expect(graph!.backgroundColor) == dataSource.backgroundColorOfGraph(graph!)
+                    expect(graph!.strokeColorOfSectorLines) == dataSource.strokeColorOfSectorLines(graph!)
+                    expect(graph!.strokeWidthOfSectorLines) == dataSource.strokeWidthOfSectorLines(graph!)
+                    expect(graph!.strokeColorOfRings) == dataSource.strokeColorOfRings(graph!)
+                    expect(graph!.strokeWidthOfRings) == dataSource.strokeWidthOfRings(graph!)
+                }
+            }
+
+            context("#reload") {
+                it("will load a CHRadarGraphView") {
+                    testViewController.graph!.reload()
+                    expect(testViewController.graph!.backgroundColor) == dataSource.backgroundColorOfGraph(testViewController.graph!)
+                }
+            }
+
+            context("#buildPath") {
+                it("will return a UIBezierPath") {
+                    let startAngle = CHRadarGraphView.degreesToRadians(90)
+                    let endAngle = CHRadarGraphView.degreesToRadians(180)
+                    let path = testViewController.graph?.buildPath(1.0, startAngle: startAngle, endAngle: endAngle)
+                    expect(path).to(beAKindOf(UIBezierPath))
+                }
+            }
+
+            context("#buildShape") {
+                it("will return a CAShapeLayer") {
+                    let startAngle = CHRadarGraphView.degreesToRadians(90)
+                    let endAngle = CHRadarGraphView.degreesToRadians(180)
+                    let fillColor = UIColor.blackColor().CGColor
+                    let strokeColor = UIColor.grayColor().CGColor
+                    let lineWidth: CGFloat = 1.0
+                    let path = testViewController.graph?.buildPath(1.0, startAngle: startAngle, endAngle: endAngle)
+                    let shape = testViewController.graph?.buildShape(path!, fillColor: fillColor, strokeColor: strokeColor, lineWidth: lineWidth)
+                    expect(shape).to(beAKindOf(CAShapeLayer))
+                    expect(shape!.fillColor).to(beTruthy())
+                    expect(shape!.strokeColor).to(beTruthy())
+                    expect(shape!.lineWidth) == lineWidth
+                }
+            }
+
+            context("#degressToRadians") {
+                it("will convert degrees to radians") {
+                    let degrees: CGFloat = 180
+                    let expectedRadians = M_PI
+                    let radians: CGFloat = CHRadarGraphView.degreesToRadians(degrees)
+                    expect(radians) > 3.14159265
+                    expect(radians) < 3.14159266
+                }
             }
 
         }
@@ -71,6 +135,8 @@ class TestViewController: UIViewController {
             CHSectorData(2, "3:45"),
             CHSectorData(3, "4pm")
         ])
+        graph = CHRadarGraphView(delegate: self, dataSource: self)
+        view.addSubview(graph!.view)
     }
 
     override func viewWillAppear(animated: Bool) {
