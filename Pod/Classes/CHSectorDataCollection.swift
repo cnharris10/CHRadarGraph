@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol CHSectorDataCollectionProtocol: CollectionType {
+protocol CHSectorDataCollectionProtocol {
     associatedtype SectorData
     init(_ data: [SectorData])
 }
@@ -16,7 +16,6 @@ protocol CHSectorDataCollectionProtocol: CollectionType {
 public struct CHSectorDataCollection<T>: CHSectorDataCollectionProtocol {
 
     public typealias SectorData = T
-    public typealias Element = T
 
     public var startIndex = 0
     public var endIndex: Int
@@ -31,32 +30,10 @@ public struct CHSectorDataCollection<T>: CHSectorDataCollectionProtocol {
         self.endIndex = data.count - 1
     }
 
-    public func generate() -> AnyGenerator<T> {
-        var nextIndex = data.count - 1
-
-        return AnyGenerator<T> {
-            if (nextIndex < 0) {
-                return nil
-            }
-            nextIndex -= 1
-            return self.data[nextIndex]
-        }
-    }
-
-    public mutating func next() -> Element? {
-        if currentIndex < data.count {
-            currentIndex += 1
-            return data[currentIndex]
-        }
-        return nil
-    }
-
-    public subscript(index: Int) -> T {
+    public subscript(index: Int) -> T? {
         get {
-            return data[index]
+            return index < count ? data[index] : nil
         }
     }
-
-
 
 }

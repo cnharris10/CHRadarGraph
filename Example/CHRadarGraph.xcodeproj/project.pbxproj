@@ -8,12 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		1D385B18F05CC28DCB58A862 /* Pods_CHRadarGraph_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C66C22FDF57A5FF927F024E /* Pods_CHRadarGraph_Example.framework */; };
+		2A3F3F251CD2E18700AE965A /* CHSectorCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3F3F221CD2DF9200AE965A /* CHSectorCellSpec.swift */; };
+		2A3F3F281CD2E39500AE965A /* CHSectorLabelSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3F3F261CD2E2E600AE965A /* CHSectorLabelSpec.swift */; };
+		2A82FACD1CD2EB5F003ED9AC /* CHSectorDataCollectionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3F3F291CD2E3EB00AE965A /* CHSectorDataCollectionSpec.swift */; };
+		2A82FAD01CD2F445003ED9AC /* CHRadarGraphViewSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A82FACE1CD2F270003ED9AC /* CHRadarGraphViewSpec.swift */; };
+		2A82FAD11CD2F779003ED9AC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		C35DB02BF5CD86C9EAC635B5 /* Pods_CHRadarGraph_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF46528EC9DBBDED3E40F556 /* Pods_CHRadarGraph_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +34,10 @@
 /* Begin PBXFileReference section */
 		0FFEBAB76E18F5BFB31A2FFA /* Pods-CHRadarGraph_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CHRadarGraph_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-CHRadarGraph_Example/Pods-CHRadarGraph_Example.release.xcconfig"; sourceTree = "<group>"; };
 		1EB8238C13F306A9768DDC58 /* Pods-CHRadarGraph_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CHRadarGraph_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CHRadarGraph_Tests/Pods-CHRadarGraph_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		2A3F3F221CD2DF9200AE965A /* CHSectorCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CHSectorCellSpec.swift; sourceTree = "<group>"; };
+		2A3F3F261CD2E2E600AE965A /* CHSectorLabelSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CHSectorLabelSpec.swift; sourceTree = "<group>"; };
+		2A3F3F291CD2E3EB00AE965A /* CHSectorDataCollectionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CHSectorDataCollectionSpec.swift; sourceTree = "<group>"; };
+		2A82FACE1CD2F270003ED9AC /* CHRadarGraphViewSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CHRadarGraphViewSpec.swift; sourceTree = "<group>"; };
 		48BC026D53A4B2C69720CC54 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4C66C22FDF57A5FF927F024E /* Pods_CHRadarGraph_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CHRadarGraph_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD01AFB9204008FA782 /* CHRadarGraph_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CHRadarGraph_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,7 +49,6 @@
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* CHRadarGraph_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CHRadarGraph_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		8772BD20AC3D89580C385A35 /* Pods-CHRadarGraph_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CHRadarGraph_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CHRadarGraph_Tests/Pods-CHRadarGraph_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		C08A7458A2A05A067002D5D4 /* CHRadarGraph.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = CHRadarGraph.podspec; path = ../CHRadarGraph.podspec; sourceTree = "<group>"; };
 		EF46528EC9DBBDED3E40F556 /* Pods_CHRadarGraph_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CHRadarGraph_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,7 +122,10 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				607FACEB1AFB9204008FA782 /* Tests.swift */,
+				2A3F3F221CD2DF9200AE965A /* CHSectorCellSpec.swift */,
+				2A3F3F261CD2E2E600AE965A /* CHSectorLabelSpec.swift */,
+				2A82FACE1CD2F270003ED9AC /* CHRadarGraphViewSpec.swift */,
+				2A3F3F291CD2E3EB00AE965A /* CHSectorDataCollectionSpec.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -256,6 +266,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A82FAD11CD2F779003ED9AC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,7 +379,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
+				2A82FACD1CD2EB5F003ED9AC /* CHSectorDataCollectionSpec.swift in Sources */,
+				2A3F3F281CD2E39500AE965A /* CHSectorLabelSpec.swift in Sources */,
+				2A82FAD01CD2F445003ED9AC /* CHRadarGraphViewSpec.swift in Sources */,
+				2A3F3F251CD2E18700AE965A /* CHSectorCellSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

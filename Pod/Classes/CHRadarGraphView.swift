@@ -130,7 +130,6 @@ public struct CHRadarGraphView {
 
             let shape = buildShape(path, fillColor: backgroundColor.CGColor, strokeColor: strokeColorOfSectorLines.CGColor, lineWidth: strokeWidthOfSectorLines)
             view.layer.addSublayer(shape)
-
         }
     }
 

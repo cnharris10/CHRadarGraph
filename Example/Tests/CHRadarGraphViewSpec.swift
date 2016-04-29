@@ -1,15 +1,31 @@
-//
-//  ViewController.swift
-//  test-graph
-//
-//  Created by Christopher Harris on 4/9/16.
-//  Copyright © 2016 Christopher Harris. All rights reserved.
-//
-
-import UIKit
+import Quick
+import Nimble
 import CHRadarGraph
 
-class ViewController: UIViewController {
+class CHGraphViewSpec: QuickSpec {
+
+    override func spec() {
+        describe("CHRadarGraphView") {
+
+            var testViewController: TestViewController!
+
+            beforeEach {
+                testViewController = TestViewController()
+                testViewController.graph?.reload()
+            }
+
+            it("will load a CHRadarGraphView") {
+                expect(testViewController.view).notTo(beNil())
+            }
+
+        }
+    }
+    
+}
+
+// Mark: - TestViewController
+
+class TestViewController: UIViewController {
 
     var sectorData: CHSectorDataCollection<CHSectorData>?
     var graph: CHRadarGraphView?
@@ -55,8 +71,6 @@ class ViewController: UIViewController {
             CHSectorData(2, "3:45"),
             CHSectorData(3, "4pm")
         ])
-        graph = CHRadarGraphView(delegate: self, dataSource: self)
-        view.addSubview(graph!.view)
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -64,36 +78,9 @@ class ViewController: UIViewController {
         graph!.reload()
     }
 
-    func sectorColor(value: CGFloat) -> UIColor {
-        switch(value) {
-        case 1:
-            return UIColor(red: 0/255, green: 73/255, blue: 165/255, alpha: 1)
-        case 2:
-            return UIColor(red: 70/255, green: 125/255, blue: 195/255, alpha: 1)
-        case 3:
-            return UIColor(red: 126/255, green: 184/255, blue: 224/255, alpha: 1)
-        case 4:
-            return UIColor(red: 160/255, green: 214/255, blue: 243/255, alpha: 1)
-        case 5:
-            return UIColor(red: 221/255, green: 241/255, blue: 250/255, alpha: 1)
-        case 6:
-            return UIColor(red: 251/255, green: 224/255, blue: 198/255, alpha: 1)
-        case 7:
-            return UIColor(red: 251/255, green: 201/255, blue: 157/255, alpha: 1)
-        case 8:
-            return UIColor(red: 254/255, green: 161/255, blue: 102/255, alpha: 1)
-        case 9:
-            return UIColor(red: 255/255, green: 124/255, blue: 32/255, alpha: 1)
-        case 10:
-            return UIColor(red: 255/255, green: 50/255, blue: 0, alpha: 1)
-        default:
-            return UIColor.whiteColor()
-        }
-    }
-
 }
 
-extension ViewController: CHRadarGraphViewDataSource {
+extension TestViewController: CHRadarGraphViewDataSource {
 
     func centerOfGraph(graphView: CHRadarGraphView) -> CGPoint {
         return CGPointMake(500, 500)
@@ -116,7 +103,7 @@ extension ViewController: CHRadarGraphViewDataSource {
     }
 
     func numberOfDataSectors(graphView: CHRadarGraphView) -> Int {
-        return sectorData!.count
+        return self.sectorData!.count
     }
 
     func backgroundColorOfGraph(graphView: CHRadarGraphView) -> UIColor {
@@ -151,12 +138,12 @@ extension ViewController: CHRadarGraphViewDataSource {
         let data = sectorData![index]
         let height = data!.height
         let label = CHSectorLabel(text: data!.label, isBold: false, color: UIColor.blackColor().CGColor)
-        return CHSectorCell(height: height, backgroundColor: sectorColor(height).CGColor, label: label)
+        return CHSectorCell(height: height, backgroundColor: UIColor.whiteColor().CGColor, label: label)
     }
 
 }
 
-extension ViewController: CHRadarGraphViewDelegate {
+extension TestViewController: CHRadarGraphViewDelegate {
 
     func willDisplayGraph(graphView: CHRadarGraphView) {
         print("Graph will display! - graph: \(graphView)")
@@ -173,13 +160,13 @@ extension ViewController: CHRadarGraphViewDelegate {
     func didDisplayRing(graphView: CHRadarGraphView, index: Int) {
         print("Ring did display - graph: \(graphView), index: \(index)")
     }
-
+    
     func willDisplaySector(graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
         print("Sector will display! - graph: \(graphView), sector: \(sector), index: \(index)")
     }
-
+    
     func didDisplaySector(graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
         print("Sector did display! - graph: \(graphView), sector: \(sector), index: \(index)")
     }
-    
+
 }
