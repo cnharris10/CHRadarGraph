@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "CHRadarGraph"
-  s.version          = "0.1.2"
+  s.version          = "0.1.3"
   s.summary          = "Create a circular bar graph."
 
 # This description is used to generate tags and improve search results.
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!  
   s.description      = <<-DESC
-    Create a circular bar graph. Supports Swift 2.2+
+    Create a circular bar graph. Supports Swift 2.2+ / iOS 9+
                        DESC
 
   s.homepage         = "https://github.com/cnharris10/CHRadarGraph"

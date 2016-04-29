@@ -13,11 +13,9 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 * Swift 2.2+
 
 ## Coming shortly...
-* Unit Tests
-* Features:
-  * More control over label offsets
-  * Shadows / Patterns within Sectors
-  * Apple Watch support
+* More control over label offsets
+* Shadows / Patterns within Sectors
+* Apple Watch support
 
 ## Example
 ![alt text](http://i.imgur.com/xEUetr6.png?1 "Radar Graph")
@@ -28,11 +26,12 @@ CHRadarGraph is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```
-pod "CHRadarGraph", "~> 0.1.2"
+pod "CHRadarGraph", "~> 0.1.3"
 ```
 
 ## Changelog
 
+v1.0.3: Added Unit tests
 v1.0.1: Removed dataSource methods `positionOfGraph` and `sizeOfGraph`
 
 ## Documentation
