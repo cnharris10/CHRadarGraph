@@ -31,6 +31,7 @@ pod "CHRadarGraph", "~> 0.1.4"
 
 ## Changelog
 
+* v1.0.4: Added more Unit tests
 * v1.0.3: Added Unit tests
 * v1.0.1: Removed dataSource methods `positionOfGraph` and `sizeOfGraph`
 
