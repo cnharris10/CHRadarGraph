@@ -97,7 +97,7 @@ public struct CHRadarGraphView {
         drawRings(endAngle)
         drawPieChart()
         drawSectors()
-        view.layer.contents = UIGraphicsGetImageFromCurrentImageContext().CGImage
+        view.layer.contents = UIGraphicsGetImageFromCurrentImageContext()!.CGImage
         UIGraphicsEndImageContext()
         delegate.didDisplayGraph(self)
     }
