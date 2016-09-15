@@ -75,7 +75,6 @@ class CHGraphViewSpec: QuickSpec {
             context("#degressToRadians") {
                 it("will convert degrees to radians") {
                     let degrees: CGFloat = 180
-                    let expectedRadians = M_PI
                     let radians: CGFloat = CHRadarGraphView.degreesToRadians(degrees)
                     expect(radians) > 3.14159265
                     expect(radians) < 3.14159266
