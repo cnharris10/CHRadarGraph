@@ -8,11 +8,11 @@
 
 Pod::Spec.new do |s|
   s.name             = "CHRadarGraph"
-  s.version          = "0.1.5"
+  s.version          = "0.2.1"
   s.summary          = "Create a circular bar graph."
 
   s.description      = <<-DESC
-    Create a circular bar graph. Supports Swift 2.x / iOS 9+
+    Create a circular bar graph. Supports Swift 3.x / iOS 9+
                        DESC
 
   s.homepage         = "https://github.com/cnharris10/CHRadarGraph"

@@ -11,7 +11,7 @@ class CHSectorCellSpec: QuickSpec {
 
                 it("will initialize") {
                     let height = CGFloat(1.0)
-                    let backgroundColor = UIColor.blackColor().CGColor
+                    let backgroundColor = UIColor.black.cgColor
                     let label = CHSectorLabel(text: "label")
                     let cell = CHSectorCell(height: height, backgroundColor: backgroundColor, label: label)
                     expect(cell.height) == height

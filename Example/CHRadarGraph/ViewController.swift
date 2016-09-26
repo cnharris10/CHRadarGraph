@@ -59,7 +59,7 @@ class ViewController: UIViewController {
         view.addSubview(graph!.view)
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         graph!.reload()
     }
@@ -87,7 +87,7 @@ class ViewController: UIViewController {
         case 10:
             return UIColor(red: 255/255, green: 50/255, blue: 0, alpha: 1)
         default:
-            return UIColor.whiteColor()
+            return UIColor.white
         }
     }
 
@@ -96,7 +96,7 @@ class ViewController: UIViewController {
 extension ViewController: CHRadarGraphViewDataSource {
 
     func centerOfGraph(graphView: CHRadarGraphView) -> CGPoint {
-        return CGPointMake(500, 500)
+        return CGPoint(x: 500, y: 500)
     }
 
     func radiusOfGraph(graphView: CHRadarGraphView) -> CGFloat {
@@ -120,7 +120,7 @@ extension ViewController: CHRadarGraphViewDataSource {
     }
 
     func backgroundColorOfGraph(graphView: CHRadarGraphView) -> UIColor {
-        return UIColor.whiteColor()
+        return UIColor.white
     }
 
     func strokeColorOfRings(graphView: CHRadarGraphView) -> UIColor {
@@ -150,8 +150,8 @@ extension ViewController: CHRadarGraphViewDataSource {
     func sectorCellForPositionAtIndex(graph: CHRadarGraphView, index: Int) -> CHSectorCell? {
         let data = sectorData![index]
         let height = data!.height
-        let label = CHSectorLabel(text: data!.label, isBold: false, color: UIColor.blackColor().CGColor)
-        return CHSectorCell(height: height, backgroundColor: sectorColor(height).CGColor, label: label)
+        let label = CHSectorLabel(text: data!.label, isBold: false, color: UIColor.black.cgColor)
+        return CHSectorCell(height: height, backgroundColor: sectorColor(value: height).cgColor, label: label)
     }
 
 }

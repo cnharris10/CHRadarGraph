@@ -8,66 +8,61 @@ class CHGraphViewSpec: QuickSpec {
         describe("CHRadarGraphView") {
 
             var testViewController: TestViewController!
-            var view: UIView!
             var dataSource: CHRadarGraphViewDataSource!
-            var delegate: CHRadarGraphViewDelegate!
 
             beforeEach {
                 testViewController = TestViewController()
-                view = testViewController!.view
+                let _ = testViewController.view!
                 dataSource = testViewController.graph!.dataSource
-                delegate = testViewController.graph!.delegate
             }
 
             context("#init") {
                 it("will load a CHRadarGraphView") {
                     let graph = testViewController!.graph
-                    expect(graph!.view).to(beAKindOf(UIView))
-                    expect(graph!.delegate).to(beTruthy())
-                    expect(graph!.dataSource).to(beTruthy())
-                    expect(graph!.startAngle) == CHRadarGraphView.degreesToRadians(dataSource.startingAngleInDegrees(graph!))
-                    expect(graph!.largestHeight) == dataSource.largestHeightForSectorCell(graph!)
-                    expect(graph!.numberOfRings) == dataSource.numberOfRings(graph!)
-                    expect(graph!.sectorsCount as NSNumber) == dataSource.numberOfSectors(graph!)
-                    expect(graph!.sectorsDataCount as NSNumber) == dataSource.numberOfDataSectors(graph!)
-                    expect(graph!.center) == dataSource.centerOfGraph(graph!)
-                    expect(graph!.radius) == dataSource.radiusOfGraph(graph!)
-                    expect(graph!.backgroundColor) == dataSource.backgroundColorOfGraph(graph!)
-                    expect(graph!.strokeColorOfSectorLines) == dataSource.strokeColorOfSectorLines(graph!)
-                    expect(graph!.strokeWidthOfSectorLines) == dataSource.strokeWidthOfSectorLines(graph!)
-                    expect(graph!.strokeColorOfRings) == dataSource.strokeColorOfRings(graph!)
-                    expect(graph!.strokeWidthOfRings) == dataSource.strokeWidthOfRings(graph!)
+                    expect(graph!.view).to(beAKindOf(UIView.self))
+                    expect(graph!.startAngle) == CHRadarGraphView.degreesToRadians(degrees: dataSource.startingAngleInDegrees(graphView: graph!))
+                    expect(graph!.largestHeight) == dataSource.largestHeightForSectorCell(graphView: graph!)
+                    expect(graph!.numberOfRings) == dataSource.numberOfRings(graphView: graph!)
+                    expect(Int(graph!.sectorsCount)).to(equal(dataSource.numberOfSectors(graphView: graph!)))
+                    expect(Int(graph!.sectorsDataCount)).to(equal(dataSource.numberOfDataSectors(graphView: graph!)))
+                    expect(graph!.center) == dataSource.centerOfGraph(graphView: graph!)
+                    expect(graph!.radius) == dataSource.radiusOfGraph(graphView: graph!)
+                    expect(graph!.backgroundColor) == dataSource.backgroundColorOfGraph(graphView: graph!)
+                    expect(graph!.strokeColorOfSectorLines) == dataSource.strokeColorOfSectorLines(graphView: graph!)
+                    expect(graph!.strokeWidthOfSectorLines) == dataSource.strokeWidthOfSectorLines(graphView: graph!)
+                    expect(graph!.strokeColorOfRings) == dataSource.strokeColorOfRings(graphView: graph!)
+                    expect(graph!.strokeWidthOfRings) == dataSource.strokeWidthOfRings(graphView: graph!)
                 }
             }
 
             context("#reload") {
                 it("will load a CHRadarGraphView") {
                     testViewController.graph!.reload()
-                    expect(testViewController.graph!.backgroundColor) == dataSource.backgroundColorOfGraph(testViewController.graph!)
+                    expect(testViewController.graph!.backgroundColor) == dataSource.backgroundColorOfGraph(graphView: testViewController.graph!)
                 }
             }
 
             context("#buildPath") {
                 it("will return a UIBezierPath") {
-                    let startAngle = CHRadarGraphView.degreesToRadians(90)
-                    let endAngle = CHRadarGraphView.degreesToRadians(180)
-                    let path = testViewController.graph?.buildPath(1.0, startAngle: startAngle, endAngle: endAngle)
-                    expect(path).to(beAKindOf(UIBezierPath))
+                    let startAngle = CHRadarGraphView.degreesToRadians(degrees: 90)
+                    let endAngle = CHRadarGraphView.degreesToRadians(degrees: 180)
+                    let path = testViewController.graph?.buildPath(radius: 1.0, startAngle: startAngle, endAngle: endAngle)
+                    expect(path).to(beAKindOf(UIBezierPath.self))
                 }
             }
 
             context("#buildShape") {
                 it("will return a CAShapeLayer") {
-                    let startAngle = CHRadarGraphView.degreesToRadians(90)
-                    let endAngle = CHRadarGraphView.degreesToRadians(180)
-                    let fillColor = UIColor.blackColor().CGColor
-                    let strokeColor = UIColor.grayColor().CGColor
+                    let startAngle = CHRadarGraphView.degreesToRadians(degrees: 90)
+                    let endAngle = CHRadarGraphView.degreesToRadians(degrees: 180)
+                    let fillColor = UIColor.black.cgColor
+                    let strokeColor = UIColor.gray.cgColor
                     let lineWidth: CGFloat = 1.0
-                    let path = testViewController.graph?.buildPath(1.0, startAngle: startAngle, endAngle: endAngle)
-                    let shape = testViewController.graph?.buildShape(path!, fillColor: fillColor, strokeColor: strokeColor, lineWidth: lineWidth)
-                    expect(shape).to(beAKindOf(CAShapeLayer))
-                    expect(shape!.fillColor).to(beTruthy())
-                    expect(shape!.strokeColor).to(beTruthy())
+                    let path = testViewController.graph?.buildPath(radius: 1.0, startAngle: startAngle, endAngle: endAngle)
+                    let shape = testViewController.graph?.buildShape(path: path!, fillColor: fillColor, strokeColor: strokeColor, lineWidth: lineWidth)
+                    expect(shape).to(beAKindOf(CAShapeLayer.self))
+                    expect(shape!.fillColor).to(equal(fillColor))
+                    expect(shape!.strokeColor).to(equal(strokeColor))
                     expect(shape!.lineWidth) == lineWidth
                 }
             }
@@ -75,9 +70,8 @@ class CHGraphViewSpec: QuickSpec {
             context("#degressToRadians") {
                 it("will convert degrees to radians") {
                     let degrees: CGFloat = 180
-                    let radians: CGFloat = CHRadarGraphView.degreesToRadians(degrees)
-                    expect(radians) > 3.14159265
-                    expect(radians) < 3.14159266
+                    let radians: CGFloat = CHRadarGraphView.degreesToRadians(degrees: degrees)
+                    expect(radians).to(beCloseTo(3.14159265, within: 0.00000001))
                 }
             }
 
@@ -138,7 +132,7 @@ class TestViewController: UIViewController {
         view.addSubview(graph!.view)
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         graph!.reload()
     }
@@ -148,7 +142,7 @@ class TestViewController: UIViewController {
 extension TestViewController: CHRadarGraphViewDataSource {
 
     func centerOfGraph(graphView: CHRadarGraphView) -> CGPoint {
-        return CGPointMake(500, 500)
+        return CGPoint(x: 500, y: 500)
     }
 
     func radiusOfGraph(graphView: CHRadarGraphView) -> CGFloat {
@@ -172,14 +166,14 @@ extension TestViewController: CHRadarGraphViewDataSource {
     }
 
     func backgroundColorOfGraph(graphView: CHRadarGraphView) -> UIColor {
-        return UIColor.whiteColor()
+        return UIColor.white
     }
 
     func strokeColorOfRings(graphView: CHRadarGraphView) -> UIColor {
         return UIColor(red: 238/255.0, green: 238/255, blue: 238/255, alpha: 1.0)
     }
 
-    func strokeColorOfDiskLines(graphView: CHRadarGraphView) -> UIColor {
+    func strokeColorOfDiskLines(_ graphView: CHRadarGraphView) -> UIColor {
         return UIColor(red: 238/255.0, green: 238/255, blue: 238/255, alpha: 1.0)
     }
 
@@ -202,8 +196,8 @@ extension TestViewController: CHRadarGraphViewDataSource {
     func sectorCellForPositionAtIndex(graph: CHRadarGraphView, index: Int) -> CHSectorCell? {
         let data = sectorData![index]
         let height = data!.height
-        let label = CHSectorLabel(text: data!.label, isBold: false, color: UIColor.blackColor().CGColor)
-        return CHSectorCell(height: height, backgroundColor: UIColor.whiteColor().CGColor, label: label)
+        let label = CHSectorLabel(text: data!.label, isBold: false, color: UIColor.black.cgColor)
+        return CHSectorCell(height: height, backgroundColor: UIColor.white.cgColor, label: label)
     }
 
 }

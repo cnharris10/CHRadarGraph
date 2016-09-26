@@ -11,37 +11,37 @@ import Foundation
 public protocol CHRadarGraphViewDelegate {
 
     // Graph
-    func willDisplayGraph(graphView: CHRadarGraphView)
-    func didDisplayGraph(graphView: CHRadarGraphView)
+    func willDisplayGraph(_ graphView: CHRadarGraphView)
+    func didDisplayGraph(_ graphView: CHRadarGraphView)
 
     // Rings
-    func willDisplayRing(graphView: CHRadarGraphView, index: Int)
-    func didDisplayRing(graphView: CHRadarGraphView, index: Int)
+    func willDisplayRing(_ graphView: CHRadarGraphView, index: Int)
+    func didDisplayRing(_ graphView: CHRadarGraphView, index: Int)
 
     // Sectors
-    func willDisplaySector(graphView: CHRadarGraphView, sector: CHSectorCell, index: Int)
-    func didDisplaySector(graphView: CHRadarGraphView, sector: CHSectorCell, index: Int)
+    func willDisplaySector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int)
+    func didDisplaySector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int)
 }
 
 public protocol CHRadarGraphViewDataSource {
-    func centerOfGraph(graphView: CHRadarGraphView) -> CGPoint
-    func radiusOfGraph(graphView: CHRadarGraphView) -> CGFloat
-    func largestHeightForSectorCell(graphView: CHRadarGraphView) -> CGFloat
-    func numberOfSectors(graphView: CHRadarGraphView) -> Int
-    func numberOfDataSectors(graphView: CHRadarGraphView) -> Int
-    func numberOfRings(graphView: CHRadarGraphView) -> Int
-    func startingAngleInDegrees(graphView: CHRadarGraphView) -> CGFloat
-    func sectorCellForPositionAtIndex(graph: CHRadarGraphView, index: Int) -> CHSectorCell?
-    func backgroundColorOfGraph(graphView: CHRadarGraphView) -> UIColor
-    func strokeColorOfRings(graphView: CHRadarGraphView) -> UIColor
-    func strokeWidthOfRings(graphView: CHRadarGraphView) -> CGFloat
-    func strokeColorOfSectorLines(graphView: CHRadarGraphView) -> UIColor
-    func strokeWidthOfSectorLines(graphView: CHRadarGraphView) -> CGFloat
+    func centerOfGraph(_ graphView: CHRadarGraphView) -> CGPoint
+    func radiusOfGraph(_ graphView: CHRadarGraphView) -> CGFloat
+    func largestHeightForSectorCell(_ graphView: CHRadarGraphView) -> CGFloat
+    func numberOfSectors(_ graphView: CHRadarGraphView) -> Int
+    func numberOfDataSectors(_ graphView: CHRadarGraphView) -> Int
+    func numberOfRings(_ graphView: CHRadarGraphView) -> Int
+    func startingAngleInDegrees(_ graphView: CHRadarGraphView) -> CGFloat
+    func sectorCellForPositionAtIndex(_ graph: CHRadarGraphView, index: Int) -> CHSectorCell?
+    func backgroundColorOfGraph(_ graphView: CHRadarGraphView) -> UIColor
+    func strokeColorOfRings(_ graphView: CHRadarGraphView) -> UIColor
+    func strokeWidthOfRings(_ graphView: CHRadarGraphView) -> CGFloat
+    func strokeColorOfSectorLines(_ graphView: CHRadarGraphView) -> UIColor
+    func strokeWidthOfSectorLines(_ graphView: CHRadarGraphView) -> CGFloat
 }
 
 public struct CHRadarGraphView {
 
-    private let degreesOfCircle: CGFloat = 360
+    fileprivate let degreesOfCircle: CGFloat = 360
 
     public var view: UIView
     internal var delegate: CHRadarGraphViewDelegate
@@ -51,10 +51,10 @@ public struct CHRadarGraphView {
     internal var numberOfRings: Int = 0
     internal var sectorsCount: CGFloat = 0
     internal var sectorsDataCount: CGFloat = 0
-    internal var center: CGPoint = CGPointZero
+    internal var center: CGPoint = CGPoint.zero
     internal var radius: CGFloat = 0
-    internal var size: CGSize = CGSizeZero
-    internal var position: CGPoint = CGPointZero
+    internal var size: CGSize = CGSize.zero
+    internal var position: CGPoint = CGPoint.zero
     internal var backgroundColor: UIColor = UIColor()
     internal var strokeColorOfSectorLines: UIColor = UIColor()
     internal var strokeColorOfRings: UIColor = UIColor()
@@ -62,7 +62,7 @@ public struct CHRadarGraphView {
     internal var strokeWidthOfRings: CGFloat = CGFloat()
 
     public init(delegate: CHRadarGraphViewDelegate, dataSource: CHRadarGraphViewDataSource) {
-        self.view = UIView(frame: CGRectZero)
+        self.view = UIView(frame: CGRect.zero)
         self.delegate = delegate
         self.dataSource = dataSource
         startAngle = CHRadarGraphView.degreesToRadians(dataSource.startingAngleInDegrees(self) ?? CHRadarGraphDefaultValues.Graph.startingAngleInDegrees)
@@ -97,13 +97,13 @@ public struct CHRadarGraphView {
         drawRings(endAngle)
         drawPieChart()
         drawSectors()
-        view.layer.contents = UIGraphicsGetImageFromCurrentImageContext()!.CGImage
+        view.layer.contents = UIGraphicsGetImageFromCurrentImageContext()!.cgImage
         UIGraphicsEndImageContext()
         delegate.didDisplayGraph(self)
     }
 
     // Circles
-    func drawRings(endAngle: CGFloat) {
+    func drawRings(_ endAngle: CGFloat) {
         if numberOfRings < 1 {
             return
         }
@@ -112,7 +112,7 @@ public struct CHRadarGraphView {
             delegate.willDisplayRing(self, index: index)
             let pathRadius = (CGFloat(index) / CGFloat(numberOfRings)) * radius
             let path = buildPath(pathRadius, startAngle: startAngle, endAngle: endAngle)
-            let shape = buildShape(path, fillColor: UIColor.clearColor().CGColor, strokeColor: strokeColorOfRings.CGColor, lineWidth: strokeWidthOfRings)
+            let shape = buildShape(path, fillColor: UIColor.clear.cgColor, strokeColor: strokeColorOfRings.cgColor, lineWidth: strokeWidthOfRings)
             view.layer.addSublayer(shape)
             delegate.didDisplayRing(self, index: index)
         }
@@ -121,14 +121,14 @@ public struct CHRadarGraphView {
     // Divisions
     func drawSectors() {
         for index in 0...Int(sectorsDataCount) {
-            let path = UIBezierPath(rect: CGRectMake(center.x, center.y, radius, 0.1))
-            var transform = CGAffineTransformIdentity;
-            transform = CGAffineTransformTranslate(transform, center.x, center.y);
-            transform = CGAffineTransformRotate(transform, startAngle + CHRadarGraphView.degreesToRadians(CGFloat(CGFloat(index) * (degreesOfCircle / sectorsCount))));
-            transform = CGAffineTransformTranslate(transform, -center.x, -center.y);
-            path.applyTransform(transform)
+            let path = UIBezierPath(rect: CGRect(x: center.x, y: center.y, width: radius, height: 0.1))
+            var transform = CGAffineTransform.identity;
+            transform = transform.translatedBy(x: center.x, y: center.y);
+            transform = transform.rotated(by: startAngle + CHRadarGraphView.degreesToRadians(CGFloat(CGFloat(index) * (degreesOfCircle / sectorsCount))));
+            transform = transform.translatedBy(x: -center.x, y: -center.y);
+            path.apply(transform)
 
-            let shape = buildShape(path, fillColor: backgroundColor.CGColor, strokeColor: strokeColorOfSectorLines.CGColor, lineWidth: strokeWidthOfSectorLines)
+            let shape = buildShape(path, fillColor: backgroundColor.cgColor, strokeColor: strokeColorOfSectorLines.cgColor, lineWidth: strokeWidthOfSectorLines)
             view.layer.addSublayer(shape)
         }
     }
@@ -161,8 +161,8 @@ public struct CHRadarGraphView {
             let label = UILabel()
             label.frame.origin = CGPoint(x: distantX, y: distantY)
             label.text = sectorCell.label?.text ?? ""
-            label.textAlignment = .Right
-            label.font = UIFont.systemFontOfSize(12.0)
+            label.textAlignment = .right
+            label.font = UIFont.systemFont(ofSize: 12.0)
             label.sizeToFit()
             label.layer.anchorPoint = CGPoint(x: 0, y: 0)
             view.addSubview(label)
@@ -170,18 +170,18 @@ public struct CHRadarGraphView {
         }
     }
 
-    func buildPath(radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) -> UIBezierPath {
+    func buildPath(_ radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) -> UIBezierPath {
         let path = UIBezierPath()
-        path.moveToPoint(center)
-        path.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
-        path.moveToPoint(center)
-        path.closePath()
+        path.move(to: center)
+        path.addArc(withCenter: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        path.move(to: center)
+        path.close()
         return path
     }
 
-    func buildShape(path: UIBezierPath, fillColor: CGColor?, strokeColor: CGColor?, lineWidth: CGFloat?) -> CAShapeLayer {
+    func buildShape(_ path: UIBezierPath, fillColor: CGColor?, strokeColor: CGColor?, lineWidth: CGFloat?) -> CAShapeLayer {
         let shape = CAShapeLayer()
-        shape.path = path.CGPath
+        shape.path = path.cgPath
 
         if let fc = fillColor {
             shape.fillColor = fc
@@ -197,7 +197,7 @@ public struct CHRadarGraphView {
         return shape
     }
 
-    static func degreesToRadians(degrees: CGFloat) -> CGFloat {
+    static func degreesToRadians(_ degrees: CGFloat) -> CGFloat {
         return degrees * (CGFloat(M_PI) / (360 / 2))
     }
 

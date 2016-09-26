@@ -16,9 +16,9 @@ struct CHRadarGraphDefaultValues {
         static let center = CGPoint(x: 300,y: 300)
         static let radius = CGFloat(200)
         static let size = CGSize(width: 400,height: 400)
-        static let postion = CGPointZero
+        static let postion = CGPoint.zero
         static let numberOfRings = 10
-        static let backgroundColor = UIColor.whiteColor()
+        static let backgroundColor = UIColor.white
         static let startingAngleInDegrees = CGFloat(0)
     }
 

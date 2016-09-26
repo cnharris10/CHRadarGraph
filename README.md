@@ -10,7 +10,7 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Requirements
 * iOS 9+
-* Swift 2.3+
+* Swift 3+
 
 ## Coming shortly...
 * More control over label offsets
@@ -25,21 +25,19 @@ CHRadarGraph is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```
-pod "CHRadarGraph", "~> 0.1.5"
+pod "CHRadarGraph", "~> 0.2.1"
 ```
 
 ## Changelog
-
-* v1.0.5: Convert to Swift 2.3+
-* v1.0.4: Added more Unit tests
-* v1.0.3: Added Unit tests
-* v1.0.1: Removed dataSource methods `positionOfGraph` and `sizeOfGraph`
-
-Note: 0.2.1 will be the next version for Swift 3
+* v0.2.1: Convert to Swift 3.0
+* v0.1.5: Convert to Swift 2.3
+* v0.1.4: Added more Unit tests
+* v0.1.3: Added Unit tests
+* v0.1.1: Removed dataSource methods `positionOfGraph` and `sizeOfGraph`
 
 ## Documentation
 
-###Delegate methods:
+### Delegate methods (Swift 3.x):
 
 Invoked before graph rendering
 
@@ -65,7 +63,7 @@ Invoked after each sector rendering
 
     func didDisplaySector(graphView: CHRadarGraphView, sector: CHSectorCell, index: Int)
 
-###DataSource methods:
+###DataSource methods (Swift 3.x):
 
 Position and size of graph are automatically determined by center point and radius
 

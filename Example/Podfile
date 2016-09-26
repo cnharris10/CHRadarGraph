@@ -1,13 +1,15 @@
+platform :ios, '9.0'
 source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
+inhibit_all_warnings!
 
-target 'CHRadarGraph_Example', :exclusive => true do
-  pod 'CHRadarGraph', :path => '../'
+target 'CHRadarGraph_Example' do
+    pod "CHRadarGraph"
+    
+    target 'CHRadarGraph_Tests' do
+        inherit! :search_paths
+        pod 'Quick', '0.10.0'
+        pod 'Nimble', '5.0.0'
+    end
 end
 
-target 'CHRadarGraph_Tests', :exclusive => true do
-  pod 'CHRadarGraph', :path => '../'
-
-  pod 'Quick', '~> 0.8'
-  pod 'Nimble', '~> 3.0'
-end

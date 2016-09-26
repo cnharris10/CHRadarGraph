@@ -20,7 +20,7 @@ public struct CHSectorLabel: CHSectorLabelProtocol {
     public var isBold: Bool
     public var color: CGColor?
 
-    public init(text: String?, isBold: Bool = false, color: CGColor = UIColor.blackColor().CGColor) {
+    public init(text: String?, isBold: Bool = false, color: CGColor = UIColor.black.cgColor) {
         self.text = text
         self.isBold = isBold
         self.color = color

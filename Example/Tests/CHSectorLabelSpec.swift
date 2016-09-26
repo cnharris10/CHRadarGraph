@@ -22,7 +22,7 @@ class CHSectorLabelSpec: QuickSpec {
 
                 it("will initialize with text, boldness, and a color ") {
                     let isBold = true
-                    let color = UIColor.blackColor().CGColor
+                    let color = UIColor.black.cgColor
                     let label = CHSectorLabel(text: text, isBold: isBold, color: color)
                     expect(label.text) == text
                 }

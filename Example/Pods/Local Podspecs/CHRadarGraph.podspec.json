@@ -1,25 +1,22 @@
 {
   "name": "CHRadarGraph",
-  "version": "0.1.0",
-  "summary": "A short description of CHRadarGraph.",
-  "description": "",
-  "homepage": "https://github.com/<GITHUB_USERNAME>/CHRadarGraph",
+  "version": "0.1.5",
+  "summary": "Create a circular bar graph.",
+  "description": "Create a circular bar graph. Supports Swift 2.x / iOS 9+",
+  "homepage": "https://github.com/cnharris10/CHRadarGraph",
   "license": "MIT",
   "authors": {
-    "Christopher Harris": "chris@neumitra.com"
+    "Christopher Harris": "cnharris@gmail.com"
   },
   "source": {
-    "git": "https://github.com/<GITHUB_USERNAME>/CHRadarGraph.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/cnharris10/CHRadarGraph.git",
+    "tag": "0.1.5"
   },
+  "social_media_url": "https://twitter.com/cnharris10",
   "platforms": {
-    "ios": "8.0"
+    "ios": "9.0"
   },
   "requires_arc": true,
   "source_files": "Pod/Classes/**/*",
-  "resource_bundles": {
-    "CHRadarGraph": [
-      "Pod/Assets/*.png"
-    ]
-  }
+  "frameworks": "UIKit"
 }
