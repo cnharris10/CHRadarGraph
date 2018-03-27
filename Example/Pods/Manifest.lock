@@ -1,18 +1,18 @@
 PODS:
   - CHRadarGraph (0.1.5)
-  - Nimble (5.0.0)
-  - Quick (0.10.0)
+  - Nimble (7.0.3)
+  - Quick (1.2.0)
 
 DEPENDENCIES:
   - CHRadarGraph
-  - Nimble (= 5.0.0)
-  - Quick (= 0.10.0)
+  - Nimble (= 7.0.3)
+  - Quick (= 1.2.0)
 
 SPEC CHECKSUMS:
   CHRadarGraph: 5563d2448d9763278b915741b66df8f509c226d1
-  Nimble: 56fc9f5020effa2206de22c3dd910f4fb011b92f
-  Quick: 5d290df1c69d5ee2f0729956dcf0fd9a30447eaa
+  Nimble: 7f5a9c447a33002645a071bddafbfb24ea70e0ac
+  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
 
-PODFILE CHECKSUM: 1a68c30f5557e6e00c0962816a4a26af08883900
+PODFILE CHECKSUM: 1deef3d2201408dee06985a27e0519d1c11f4b2d
 
-COCOAPODS: 1.1.0.rc.2
+COCOAPODS: 1.4.0
