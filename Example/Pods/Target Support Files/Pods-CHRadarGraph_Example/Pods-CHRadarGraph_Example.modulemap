@@ -1,0 +1,6 @@
+framework module Pods_CHRadarGraph_Example {
+  umbrella header "Pods-CHRadarGraph_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,27 @@
+PODS:
+  - CHRadarGraph (0.3.0)
+  - Nimble (10.0.0)
+  - Quick (2.2.1)
+
+DEPENDENCIES:
+  - CHRadarGraph (from `../`)
+  - Nimble (~> 10.0.0)
+  - Quick (~> 2.2.0)
+
+SPEC REPOS:
+  trunk:
+    - Nimble
+    - Quick
+
+EXTERNAL SOURCES:
+  CHRadarGraph:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  CHRadarGraph: 95d8a8344a596a7dd5da1b96b8037d21267598d6
+  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
+  Quick: f5754d69b7013f5864c29aab9ae6f0c79c5bc200
+
+PODFILE CHECKSUM: e3ca7b1bb1566f96b6d1054e5f8a1ba7a97c3f1d
+
+COCOAPODS: 1.14.3
