@@ -202,7 +202,7 @@
 		359E7C21BBBD97FDD8EF230E728EBC17 /* Quick.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Quick.h; path = Sources/QuickObjectiveC/Quick.h; sourceTree = "<group>"; };
 		3756750B9AD0146AE7AB1637B7A04F6A /* QuickSpecBase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QuickSpecBase.h; path = Sources/QuickObjCRuntime/include/QuickSpecBase.h; sourceTree = "<group>"; };
 		3F4B7A42760F95D50987E42BD6E399CD /* Quick.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Quick.release.xcconfig; sourceTree = "<group>"; };
-		3FD7D1BDC563B4F5CF9A3A3B0756099C /* Pods-CHRadarGraph_Example */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-CHRadarGraph_Example"; path = Pods_CHRadarGraph_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FD7D1BDC563B4F5CF9A3A3B0756099C /* Pods_CHRadarGraph_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CHRadarGraph_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FE3C6B0EF06A5BDC213259D5F03B1B7 /* BeLessThan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BeLessThan.swift; path = Sources/Nimble/Matchers/BeLessThan.swift; sourceTree = "<group>"; };
 		41ED7710C8C7101F486AAFBC6FA9B0AA /* BeIdenticalTo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BeIdenticalTo.swift; path = Sources/Nimble/Matchers/BeIdenticalTo.swift; sourceTree = "<group>"; };
 		47C3581F384B3D8052E3A7930733E4E2 /* CHSectorDataCollection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CHSectorDataCollection.swift; path = Classes/CHSectorDataCollection.swift; sourceTree = "<group>"; };
@@ -225,7 +225,7 @@
 		6C53E4A4BD96DA70A1FF6A6EF6409FC2 /* RaisesException.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RaisesException.swift; path = Sources/Nimble/Matchers/RaisesException.swift; sourceTree = "<group>"; };
 		6D64265937180D1CE4776A92C84320CA /* Configuration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Configuration.swift; path = Sources/Quick/Configuration/Configuration.swift; sourceTree = "<group>"; };
 		6D6AFC1E242928F5015EEFD7E7A53AC3 /* CHRadarGraph.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = CHRadarGraph.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		6D7D307DB441E3ABFB845B4BE9E97A25 /* Pods-CHRadarGraph_Tests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-CHRadarGraph_Tests"; path = Pods_CHRadarGraph_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D7D307DB441E3ABFB845B4BE9E97A25 /* Pods_CHRadarGraph_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CHRadarGraph_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70A431DC0126F0596E5DC39E181926DD /* QuickTestSuite.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = QuickTestSuite.swift; path = Sources/Quick/QuickTestSuite.swift; sourceTree = "<group>"; };
 		7257CDD5305E867BF5296DC8E03BF3F6 /* ExampleMetadata.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExampleMetadata.swift; path = Sources/Quick/ExampleMetadata.swift; sourceTree = "<group>"; };
 		762EBC5F74C0131A7CFB3173DEC4D053 /* QuickConfiguration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = QuickConfiguration.swift; path = Sources/Quick/Configuration/QuickConfiguration.swift; sourceTree = "<group>"; };
@@ -577,8 +577,8 @@
 			children = (
 				0993558F6093D6F174367D4945D8DCA9 /* CHRadarGraph.framework */,
 				BAE263041362D074978BB3B577DF0A05 /* Nimble.framework */,
-				3FD7D1BDC563B4F5CF9A3A3B0756099C /* Pods-CHRadarGraph_Example */,
-				6D7D307DB441E3ABFB845B4BE9E97A25 /* Pods-CHRadarGraph_Tests */,
+				3FD7D1BDC563B4F5CF9A3A3B0756099C /* Pods_CHRadarGraph_Example.framework */,
+				6D7D307DB441E3ABFB845B4BE9E97A25 /* Pods_CHRadarGraph_Tests.framework */,
 				0D631E9908483F9525A6B3F36F16CC61 /* Quick.framework */,
 			);
 			name = Products;
@@ -755,7 +755,7 @@
 			);
 			name = "Pods-CHRadarGraph_Example";
 			productName = Pods_CHRadarGraph_Example;
-			productReference = 3FD7D1BDC563B4F5CF9A3A3B0756099C /* Pods-CHRadarGraph_Example */;
+			productReference = 3FD7D1BDC563B4F5CF9A3A3B0756099C /* Pods_CHRadarGraph_Example.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		6F13695E06195A78EA8A95F8C7ED0D2F /* Nimble */ = {
@@ -794,7 +794,7 @@
 			);
 			name = "Pods-CHRadarGraph_Tests";
 			productName = Pods_CHRadarGraph_Tests;
-			productReference = 6D7D307DB441E3ABFB845B4BE9E97A25 /* Pods-CHRadarGraph_Tests */;
+			productReference = 6D7D307DB441E3ABFB845B4BE9E97A25 /* Pods_CHRadarGraph_Tests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		C82891EAB7293DBEE916B21F57E8474D /* Quick */ = {
