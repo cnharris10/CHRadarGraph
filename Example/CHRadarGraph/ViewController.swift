@@ -14,47 +14,53 @@ class ViewController: UIViewController {
     var sectorData: CHSectorDataCollection<CHSectorData>?
     var graph: CHRadarGraphView?
     private var lastLayoutSize: CGSize = .zero
+    // 4x the original 10 height steps/rings, so the same data shape now
+    // resolves at finer radial granularity.
+    private let maxSectorHeight: CGFloat = 40
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Same 36 time slots as before (7am - 4pm, 15-min steps); heights are
+        // the original 1-10 pattern scaled onto the finer 1-40 range so the
+        // chart's shape is unchanged but now resolved across 4x as many rings.
         sectorData = CHSectorDataCollection([
-            CHSectorData(1, "7am"),
-            CHSectorData(2, "7:15"),
-            CHSectorData(3, "7:30"),
-            CHSectorData(4, "7:45"),
-            CHSectorData(5, "8am"),
-            CHSectorData(6, "8:15"),
-            CHSectorData(7, "8:30"),
-            CHSectorData(8, "8:45"),
-            CHSectorData(9, "9am"),
-            CHSectorData(10, "9:15"),
-            CHSectorData(1, "9:30"),
-            CHSectorData(2, "9:45"),
-            CHSectorData(3, "10am"),
-            CHSectorData(4, "10:15"),
-            CHSectorData(5, "10:30"),
-            CHSectorData(6, "10:45"),
-            CHSectorData(7, "11am"),
-            CHSectorData(8, "11:15"),
-            CHSectorData(9, "11:30"),
-            CHSectorData(10, "11:45"),
-            CHSectorData(1, "12pm"),
-            CHSectorData(2, "12:15"),
-            CHSectorData(3, "12:30"),
-            CHSectorData(4, "12:45"),
-            CHSectorData(5, "1pm"),
-            CHSectorData(6, "1:15"),
-            CHSectorData(7, "1:30"),
-            CHSectorData(8, "1:45"),
-            CHSectorData(9, "2pm"),
-            CHSectorData(10, "2:15"),
-            CHSectorData(1, "2:30"),
-            CHSectorData(2, "2:45"),
-            CHSectorData(9, "3pm"),
-            CHSectorData(10, "3:15"),
-            CHSectorData(1, "3:30"),
-            CHSectorData(2, "3:45"),
-            CHSectorData(3, "4pm")
+            CHSectorData(4, "7am"),
+            CHSectorData(8, "7:15"),
+            CHSectorData(12, "7:30"),
+            CHSectorData(16, "7:45"),
+            CHSectorData(20, "8am"),
+            CHSectorData(24, "8:15"),
+            CHSectorData(28, "8:30"),
+            CHSectorData(32, "8:45"),
+            CHSectorData(36, "9am"),
+            CHSectorData(40, "9:15"),
+            CHSectorData(4, "9:30"),
+            CHSectorData(8, "9:45"),
+            CHSectorData(12, "10am"),
+            CHSectorData(16, "10:15"),
+            CHSectorData(20, "10:30"),
+            CHSectorData(24, "10:45"),
+            CHSectorData(28, "11am"),
+            CHSectorData(32, "11:15"),
+            CHSectorData(36, "11:30"),
+            CHSectorData(40, "11:45"),
+            CHSectorData(4, "12pm"),
+            CHSectorData(8, "12:15"),
+            CHSectorData(12, "12:30"),
+            CHSectorData(16, "12:45"),
+            CHSectorData(20, "1pm"),
+            CHSectorData(24, "1:15"),
+            CHSectorData(28, "1:30"),
+            CHSectorData(32, "1:45"),
+            CHSectorData(36, "2pm"),
+            CHSectorData(40, "2:15"),
+            CHSectorData(4, "2:30"),
+            CHSectorData(8, "2:45"),
+            CHSectorData(36, "3pm"),
+            CHSectorData(40, "3:15"),
+            CHSectorData(4, "3:30"),
+            CHSectorData(8, "3:45"),
+            CHSectorData(12, "4pm")
         ])
     }
 
@@ -65,41 +71,68 @@ class ViewController: UIViewController {
         setUpGraph()
     }
 
+    // What the chart's height/color encodes. Anyone embedding CHRadarGraphView
+    // can set this to describe their own data; the Example sets it to
+    // demonstrate the pattern.
+    var graphDescription: String? = "Number of GitHub PR's created"
+
     private func setUpGraph() {
         graph?.view.removeFromSuperview()
         graph = CHRadarGraphView(delegate: self, dataSource: self)
         view.addSubview(graph!.view)
         graph!.reload()
+        addDescriptionLabel(to: graph!)
+    }
+
+    // The chart's data spans fewer sectors than numberOfSectors, leaving an
+    // empty, widening wedge of dead space centered at the bottom of the
+    // circle (see startingAngleInDegrees). graphDescription is placed well
+    // down into that wedge - both for clearance from the wedges near the
+    // center and because the wedge is widest there - and its width is capped
+    // to what's actually free at that distance from center, so long text
+    // wraps instead of overlapping a wedge.
+    private func addDescriptionLabel(to graph: CHRadarGraphView) {
+        guard let text = graphDescription else { return }
+        let center = centerOfGraph(graph)
+        let radius = radiusOfGraph(graph)
+
+        let sectorsCount = CGFloat(numberOfSectors(graph))
+        let dataCount = CGFloat(numberOfDataSectors(graph))
+        let gapHalfAngleRadians = (CGFloat.pi / 180) * (360 - dataCount * (360 / sectorsCount)) / 2
+
+        let verticalOffset = radius * 0.6
+        let availableWidth = 2 * verticalOffset * tan(gapHalfAngleRadians) * 0.85
+
+        let label = UILabel()
+        label.text = text
+        label.font = UIFont.systemFont(ofSize: 13 * 1.5)
+        label.textColor = UIColor(white: 0.4, alpha: 1)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        let width = min(radius * 1.1, availableWidth)
+        label.frame = CGRect(x: 0, y: 0, width: width, height: 0)
+        label.sizeToFit()
+        label.frame.size.width = width
+        label.center = CGPoint(x: center.x, y: center.y + verticalOffset)
+        graph.view.addSubview(label)
     }
 
     // Sector height is a magnitude, not a category, so it's encoded as one hue
     // (blue) going light -> dark rather than a hop across unrelated hues.
-    // Ten steps of a validated sequential ramp (steps 250-700).
+    // Interpolated between the sequential ramp's documented light-end floor
+    // (step 250, the lightest step that still clears 2:1 on white) and step
+    // 550 - a lighter overall ramp than the old 250-700 span - across all
+    // maxSectorHeight steps rather than a fixed 10-case table.
     func sectorColor(value: CGFloat) -> UIColor {
-        switch(value) {
-        case 1:
-            return UIColor(red: 134/255, green: 182/255, blue: 239/255, alpha: 1)
-        case 2:
-            return UIColor(red: 109/255, green: 167/255, blue: 236/255, alpha: 1)
-        case 3:
-            return UIColor(red: 85/255, green: 152/255, blue: 231/255, alpha: 1)
-        case 4:
-            return UIColor(red: 57/255, green: 135/255, blue: 229/255, alpha: 1)
-        case 5:
-            return UIColor(red: 42/255, green: 120/255, blue: 214/255, alpha: 1)
-        case 6:
-            return UIColor(red: 37/255, green: 106/255, blue: 191/255, alpha: 1)
-        case 7:
-            return UIColor(red: 28/255, green: 92/255, blue: 171/255, alpha: 1)
-        case 8:
-            return UIColor(red: 24/255, green: 79/255, blue: 149/255, alpha: 1)
-        case 9:
-            return UIColor(red: 16/255, green: 66/255, blue: 129/255, alpha: 1)
-        case 10:
-            return UIColor(red: 13/255, green: 54/255, blue: 107/255, alpha: 1)
-        default:
-            return UIColor.white
-        }
+        let start = (r: 134.0, g: 182.0, b: 239.0)
+        let end = (r: 28.0, g: 92.0, b: 171.0)
+        let t = max(0, min(1, (value - 1) / (maxSectorHeight - 1)))
+        return UIColor(
+            red: CGFloat(start.r + (end.r - start.r) * t) / 255,
+            green: CGFloat(start.g + (end.g - start.g) * t) / 255,
+            blue: CGFloat(start.b + (end.b - start.b) * t) / 255,
+            alpha: 1
+        )
     }
 
 }
@@ -120,7 +153,7 @@ extension ViewController: CHRadarGraphViewDataSource {
     }
 
     func largestHeightForSectorCell(_ graphView: CHRadarGraphView) -> CGFloat {
-        return 10
+        return maxSectorHeight
     }
 
     func numberOfSectors(_ graphView: CHRadarGraphView) -> Int {
@@ -128,7 +161,7 @@ extension ViewController: CHRadarGraphViewDataSource {
     }
 
     func numberOfRings(_ graphView: CHRadarGraphView) -> Int {
-        return 10
+        return Int(maxSectorHeight)
     }
 
     func numberOfDataSectors(_ graphView: CHRadarGraphView) -> Int {
