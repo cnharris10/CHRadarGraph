@@ -1,5 +1,8 @@
 # CHRadarGraph
 
+[![Swift Versions](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcnharris10%2FCHRadarGraph%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/cnharris10/CHRadarGraph)
+[![Platform Compatibility](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcnharris10%2FCHRadarGraph%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/cnharris10/CHRadarGraph)
+
 ## Usage
 
 To run the example project, open `Example/CHRadarGraph.xcworkspace` (or `Example/CHRadarGraph.xcodeproj`) in Xcode. The Example app depends on this package as a local Swift package, so no separate install step is required.
