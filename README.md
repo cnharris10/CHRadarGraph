@@ -1,30 +1,32 @@
 # CHRadarGraph
 
-[![Version](https://img.shields.io/cocoapods/v/CHRadarGraph.svg?style=flat)](http://cocoapods.org/pods/CHRadarGraph)
-[![License](https://img.shields.io/cocoapods/l/CHRadarGraph.svg?style=flat)](http://cocoapods.org/pods/CHRadarGraph)
-[![Platform](https://img.shields.io/cocoapods/p/CHRadarGraph.svg?style=flat)](http://cocoapods.org/pods/CHRadarGraph)
-
 ## Usage
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+To run the example project, open `Example/CHRadarGraph.xcworkspace` (or `Example/CHRadarGraph.xcodeproj`) in Xcode. The Example app depends on this package as a local Swift package, so no separate install step is required.
 
 ## Requirements
-* iOS 13+
-* Swift 5
+* iOS 26+
+* Swift 6.4
 
 ## Example
 ![alt text](http://i.imgur.com/xEUetr6.png?1 "Radar Graph")
 
 ## Installation
 
-CHRadarGraph is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+CHRadarGraph is available through the [Swift Package Manager](https://www.swift.org/documentation/package-manager/). To install
+it, add it as a dependency in your `Package.swift`:
 
+```swift
+dependencies: [
+    .package(url: "https://github.com/cnharris10/CHRadarGraph.git", from: "0.4.1")
+]
 ```
-pod "CHRadarGraph", "~> 0.3.0"
-```
+
+Or add it via Xcode: **File > Add Package Dependencies...** and enter the repository URL.
 
 ## Changelog
+* v0.4.1: Example app graph now sizes itself to the current view bounds (fixes clipping on iPad portrait) and starts at an angle that keeps the first/last data sectors mirror-symmetric about the bottom of the circle
+* v0.4.0: Convert to Swift Package Manager, Swift 6.4 & iOS 26+
 * v0.3.0: Convert to Swift 5 & iOS 13+
 * v0.2.1: Convert to Swift 3.0
 * v0.1.5: Convert to Swift 2.3

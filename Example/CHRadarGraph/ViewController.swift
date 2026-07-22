@@ -13,6 +13,7 @@ class ViewController: UIViewController {
 
     var sectorData: CHSectorDataCollection<CHSectorData>?
     var graph: CHRadarGraphView?
+    private var lastLayoutSize: CGSize = .zero
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,12 +56,19 @@ class ViewController: UIViewController {
             CHSectorData(2, "3:45"),
             CHSectorData(3, "4pm")
         ])
-        graph = CHRadarGraphView(delegate: self, dataSource: self)
-        view.addSubview(graph!.view)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard view.bounds.size != lastLayoutSize, view.bounds.size != .zero else { return }
+        lastLayoutSize = view.bounds.size
+        setUpGraph()
+    }
+
+    private func setUpGraph() {
+        graph?.view.removeFromSuperview()
+        graph = CHRadarGraphView(delegate: self, dataSource: self)
+        view.addSubview(graph!.view)
         graph!.reload()
     }
 
@@ -95,60 +103,70 @@ class ViewController: UIViewController {
 
 extension ViewController: CHRadarGraphViewDataSource {
 
-    func centerOfGraph(graphView: CHRadarGraphView) -> CGPoint {
-        return CGPoint(x: 500, y: 500)
+    // Reserve room outside the radius for the sector time labels, which are
+    // drawn past the edge of the graph (see drawPieChart's `distantX`/`distantY`).
+    private var labelMargin: CGFloat { 80 }
+
+    func centerOfGraph(_ graphView: CHRadarGraphView) -> CGPoint {
+        return CGPoint(x: view.bounds.midX, y: view.bounds.midY)
     }
 
-    func radiusOfGraph(graphView: CHRadarGraphView) -> CGFloat {
-        return 400.0
+    func radiusOfGraph(_ graphView: CHRadarGraphView) -> CGFloat {
+        let shortestSide = min(view.bounds.width, view.bounds.height)
+        return max((shortestSide / 2) - labelMargin, 50)
     }
 
-    func largestHeightForSectorCell(graphView: CHRadarGraphView) -> CGFloat {
+    func largestHeightForSectorCell(_ graphView: CHRadarGraphView) -> CGFloat {
         return 10
     }
 
-    func numberOfSectors(graphView: CHRadarGraphView) -> Int {
+    func numberOfSectors(_ graphView: CHRadarGraphView) -> Int {
         return 50
     }
 
-    func numberOfRings(graphView: CHRadarGraphView) -> Int {
+    func numberOfRings(_ graphView: CHRadarGraphView) -> Int {
         return 10
     }
 
-    func numberOfDataSectors(graphView: CHRadarGraphView) -> Int {
+    func numberOfDataSectors(_ graphView: CHRadarGraphView) -> Int {
         return sectorData!.count
     }
 
-    func backgroundColorOfGraph(graphView: CHRadarGraphView) -> UIColor {
+    func backgroundColorOfGraph(_ graphView: CHRadarGraphView) -> UIColor {
         return UIColor.white
     }
 
-    func strokeColorOfRings(graphView: CHRadarGraphView) -> UIColor {
+    func strokeColorOfRings(_ graphView: CHRadarGraphView) -> UIColor {
         return UIColor(red: 238/255.0, green: 238/255, blue: 238/255, alpha: 1.0)
     }
 
-    func strokeColorOfDiskLines(graphView: CHRadarGraphView) -> UIColor {
+    func strokeColorOfDiskLines(_ graphView: CHRadarGraphView) -> UIColor {
         return UIColor(red: 238/255.0, green: 238/255, blue: 238/255, alpha: 1.0)
     }
 
-    func strokeColorOfSectorLines(graphView: CHRadarGraphView) -> UIColor {
+    func strokeColorOfSectorLines(_ graphView: CHRadarGraphView) -> UIColor {
         return UIColor(red: 238/255.0, green: 238/255, blue: 238/255, alpha: 1.0)
     }
 
-    func startingAngleInDegrees(graphView: CHRadarGraphView) -> CGFloat {
-        return 136.5
+    func startingAngleInDegrees(_ graphView: CHRadarGraphView) -> CGFloat {
+        // Centers the empty (data-less) gap at the bottom of the circle so the
+        // first and last data sectors — 7am and 4pm — land at the same height.
+        let sectorsCount = CGFloat(numberOfSectors(graphView))
+        let dataCount = CGFloat(numberOfDataSectors(graphView))
+        let gapInDegrees = 360.0 - (dataCount * (360.0 / sectorsCount))
+        return 90.0 + gapInDegrees / 2.0
     }
 
-    func strokeWidthOfRings(graphView: CHRadarGraphView) -> CGFloat {
+    func strokeWidthOfRings(_ graphView: CHRadarGraphView) -> CGFloat {
         return 1.0
     }
 
-    func strokeWidthOfSectorLines(graphView: CHRadarGraphView) -> CGFloat {
+    func strokeWidthOfSectorLines(_ graphView: CHRadarGraphView) -> CGFloat {
         return 1.0
     }
 
-    func sectorCellForPositionAtIndex(graph: CHRadarGraphView, index: Int) -> CHSectorCell? {
-        let data = sectorData![index]
+    func sectorCellForPositionAtIndex(_ graph: CHRadarGraphView, index: Int) -> CHSectorCell? {
+        guard let data = sectorData?[index] else { return nil }
         let height = data.height
         let label = CHSectorLabel(text: data.label, isBold: false, color: UIColor.black.cgColor)
         return CHSectorCell(height: height, backgroundColor: sectorColor(value: height).cgColor, label: label)
@@ -158,27 +176,27 @@ extension ViewController: CHRadarGraphViewDataSource {
 
 extension ViewController: CHRadarGraphViewDelegate {
 
-    func willDisplayGraph(graphView: CHRadarGraphView) {
+    func willDisplayGraph(_ graphView: CHRadarGraphView) {
         print("Graph will display! - graph: \(graphView)")
     }
 
-    func didDisplayGraph(graphView: CHRadarGraphView) {
+    func didDisplayGraph(_ graphView: CHRadarGraphView) {
         print("Graph did display! - graph: \(graphView)")
     }
 
-    func willDisplayRing(graphView: CHRadarGraphView, index: Int) {
+    func willDisplayRing(_ graphView: CHRadarGraphView, index: Int) {
         print("Ring did display - graph: \(graphView), index: \(index)")
     }
 
-    func didDisplayRing(graphView: CHRadarGraphView, index: Int) {
+    func didDisplayRing(_ graphView: CHRadarGraphView, index: Int) {
         print("Ring did display - graph: \(graphView), index: \(index)")
     }
 
-    func willDisplaySector(graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
+    func willDisplaySector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
         print("Sector will display! - graph: \(graphView), sector: \(sector), index: \(index)")
     }
 
-    func didDisplaySector(graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
+    func didDisplaySector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
         print("Sector did display! - graph: \(graphView), sector: \(sector), index: \(index)")
     }
     
