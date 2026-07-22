@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "CHRadarGraph",
     platforms: [
-        .iOS("26.0")
+        .iOS(.v13)
     ],
     products: [
         .library(

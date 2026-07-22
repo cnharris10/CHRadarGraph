@@ -5,8 +5,8 @@
 To run the example project, open `Example/CHRadarGraph.xcworkspace` (or `Example/CHRadarGraph.xcodeproj`) in Xcode. The Example app depends on this package as a local Swift package, so no separate install step is required.
 
 ## Requirements
-* iOS 26+
-* Swift 6.4
+* iOS 13+
+* Swift 6
 
 ## Example
 ![alt text](http://i.imgur.com/xEUetr6.png?1 "Radar Graph")
@@ -25,7 +25,7 @@ dependencies: [
 Or add it via Xcode: **File > Add Package Dependencies...** and enter the repository URL.
 
 ## Changelog
-* v0.4.0: Convert to Swift Package Manager, upgrade to Swift 6.4 & iOS 26+. Example app graph now sizes itself to the current view bounds (fixes clipping on iPad portrait) and starts at an angle that keeps the first/last data sectors mirror-symmetric about the bottom of the circle
+* v0.4.0: Convert to Swift Package Manager, adopt Swift 6 language mode (iOS 13+ minimum deployment target). Example app graph now sizes itself to the current view bounds (fixes clipping on iPad portrait) and starts at an angle that keeps the first/last data sectors mirror-symmetric about the bottom of the circle
 * v0.3.0: Convert to Swift 5 & iOS 13+
 * v0.2.1: Convert to Swift 3.0
 * v0.1.5: Convert to Swift 2.3
