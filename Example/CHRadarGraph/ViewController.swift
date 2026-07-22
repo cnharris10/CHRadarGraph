@@ -72,28 +72,31 @@ class ViewController: UIViewController {
         graph!.reload()
     }
 
+    // Sector height is a magnitude, not a category, so it's encoded as one hue
+    // (blue) going light -> dark rather than a hop across unrelated hues.
+    // Ten steps of a validated sequential ramp (steps 250-700).
     func sectorColor(value: CGFloat) -> UIColor {
         switch(value) {
         case 1:
-            return UIColor(red: 0/255, green: 73/255, blue: 165/255, alpha: 1)
+            return UIColor(red: 134/255, green: 182/255, blue: 239/255, alpha: 1)
         case 2:
-            return UIColor(red: 70/255, green: 125/255, blue: 195/255, alpha: 1)
+            return UIColor(red: 109/255, green: 167/255, blue: 236/255, alpha: 1)
         case 3:
-            return UIColor(red: 126/255, green: 184/255, blue: 224/255, alpha: 1)
+            return UIColor(red: 85/255, green: 152/255, blue: 231/255, alpha: 1)
         case 4:
-            return UIColor(red: 160/255, green: 214/255, blue: 243/255, alpha: 1)
+            return UIColor(red: 57/255, green: 135/255, blue: 229/255, alpha: 1)
         case 5:
-            return UIColor(red: 221/255, green: 241/255, blue: 250/255, alpha: 1)
+            return UIColor(red: 42/255, green: 120/255, blue: 214/255, alpha: 1)
         case 6:
-            return UIColor(red: 251/255, green: 224/255, blue: 198/255, alpha: 1)
+            return UIColor(red: 37/255, green: 106/255, blue: 191/255, alpha: 1)
         case 7:
-            return UIColor(red: 251/255, green: 201/255, blue: 157/255, alpha: 1)
+            return UIColor(red: 28/255, green: 92/255, blue: 171/255, alpha: 1)
         case 8:
-            return UIColor(red: 254/255, green: 161/255, blue: 102/255, alpha: 1)
+            return UIColor(red: 24/255, green: 79/255, blue: 149/255, alpha: 1)
         case 9:
-            return UIColor(red: 255/255, green: 124/255, blue: 32/255, alpha: 1)
+            return UIColor(red: 16/255, green: 66/255, blue: 129/255, alpha: 1)
         case 10:
-            return UIColor(red: 255/255, green: 50/255, blue: 0, alpha: 1)
+            return UIColor(red: 13/255, green: 54/255, blue: 107/255, alpha: 1)
         default:
             return UIColor.white
         }

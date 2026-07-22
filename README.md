@@ -12,7 +12,7 @@ To run the example project, open `Example/CHRadarGraph.xcworkspace` (or `Example
 * Swift 6
 
 ## Example
-![alt text](http://i.imgur.com/xEUetr6.png?1 "Radar Graph")
+![CHRadarGraph rendered on iPhone and iPad with the sequential blue palette](docs/example.png "Radar Graph")
 
 ## Installation
 
