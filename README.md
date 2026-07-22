@@ -18,15 +18,14 @@ it, add it as a dependency in your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/cnharris10/CHRadarGraph.git", from: "0.4.1")
+    .package(url: "https://github.com/cnharris10/CHRadarGraph.git", from: "0.4.0")
 ]
 ```
 
 Or add it via Xcode: **File > Add Package Dependencies...** and enter the repository URL.
 
 ## Changelog
-* v0.4.1: Example app graph now sizes itself to the current view bounds (fixes clipping on iPad portrait) and starts at an angle that keeps the first/last data sectors mirror-symmetric about the bottom of the circle
-* v0.4.0: Convert to Swift Package Manager, Swift 6.4 & iOS 26+
+* v0.4.0: Convert to Swift Package Manager, upgrade to Swift 6.4 & iOS 26+. Example app graph now sizes itself to the current view bounds (fixes clipping on iPad portrait) and starts at an angle that keeps the first/last data sectors mirror-symmetric about the bottom of the circle
 * v0.3.0: Convert to Swift 5 & iOS 13+
 * v0.2.1: Convert to Swift 3.0
 * v0.1.5: Convert to Swift 2.3
