@@ -1,0 +1,33 @@
+# This workflow builds and tests the CHRadarGraph Swift package.
+# It's an iOS-only (UIKit-based) package, so it must be built/tested against
+# an iOS destination via xcodebuild rather than plain `swift build`/`swift test`,
+# which default to the macOS host and fail with "no such module 'UIKit'".
+
+name: Swift
+
+on:
+  push:
+    branches: [ "0.4.0" ]
+  pull_request:
+    branches: [ "0.4.0" ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: xcodebuild build -scheme CHRadarGraph -destination 'generic/platform=iOS'
+    - name: Select simulator
+      # Available simulator names change as runner images rotate hardware
+      # (e.g. iPhone 16 -> iPhone 17), so pick whatever iPhone simulator is
+      # actually available instead of hardcoding a name that will eventually
+      # stop existing.
+      run: |
+        UDID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | test("iPhone"))][0].udid')
+        echo "Using simulator: $UDID"
+        echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+    - name: Run tests
+      run: xcodebuild test -scheme CHRadarGraph -destination "id=$SIMULATOR_UDID"

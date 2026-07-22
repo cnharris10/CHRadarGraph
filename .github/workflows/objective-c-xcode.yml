@@ -1,0 +1,27 @@
+# Builds the Example demo app, which consumes CHRadarGraph as a local Swift
+# package dependency. The workspace lives in Example/, not the repo root, so
+# this points at it directly rather than relying on auto-detection.
+
+name: Xcode - Build and Analyze
+
+on:
+  push:
+    branches: [ "0.4.0" ]
+  pull_request:
+    branches: [ "0.4.0" ]
+
+jobs:
+  build:
+    name: Build Example app
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          xcodebuild clean build analyze \
+            -workspace Example/CHRadarGraph.xcworkspace \
+            -scheme CHRadarGraph-Example \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
