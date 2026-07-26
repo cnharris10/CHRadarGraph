@@ -6,9 +6,9 @@ name: Xcode - Build and Analyze
 
 on:
   push:
-    branches: [ "0.4.0" ]
+    branches: [ "0.5.0" ]
   pull_request:
-    branches: [ "0.4.0" ]
+    branches: [ "0.5.0" ]
 
 jobs:
   build:

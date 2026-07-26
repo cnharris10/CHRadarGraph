@@ -27,7 +27,43 @@ dependencies: [
 
 Or add it via Xcode: **File > Add Package Dependencies...** and enter the repository URL.
 
+## SwiftUI
+
+`CHRadarGraphView` itself is a UIKit delegate/dataSource pair (mirroring `UITableViewDataSource`), which has no idiomatic SwiftUI entry point. For SwiftUI apps, `CHRadarGraph` (iOS 14+) wraps the whole thing behind a single `View` that just takes an array of sectors - no delegate/dataSource conformance required:
+
+```swift
+import SwiftUI
+import CHRadarGraph
+
+struct ContentView: View {
+    @State private var selected: String?
+
+    var body: some View {
+        CHRadarGraph(
+            sectors: [
+                .init(height: 3, label: "Mon", color: .blue),
+                .init(height: 7, label: "Tue", color: .blue),
+                .init(height: 5, label: "Wed", color: .blue)
+            ],
+            title: "PRs created",
+            onSelect: { sector, index in
+                selected = "\(Int(sector.height)) on \(sector.label ?? "")"
+            },
+            onDeselectAll: {
+                selected = nil
+            }
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity) // see note below
+    }
+}
+```
+
+`CHRadarGraph` wraps a plain `UIView` with no intrinsic content size, so SwiftUI will collapse it to zero size unless you give it an explicit frame (as above) or place it somewhere that already constrains its size, e.g. inside a fixed-height container.
+
+This covers the common case (one title, a fixed gap, no per-ring labels) - reach for `CHRadarGraphView` directly (see the Example target) for anything it doesn't cover, such as ring labels or a custom gap-centering angle.
+
 ## Changelog
+* v0.5.0: Add VoiceOver accessibility, tap-to-select sectors (`didSelectSector`/`didTapOutsideSector` delegate callbacks), a chart description label, a SwiftUI wrapper (`CHRadarGraph`) so SwiftUI consumers don't need to implement the UIKit delegate/dataSource protocols, automatic redraw on light/dark mode changes, and DocC documentation
 * v0.4.0: Convert to Swift Package Manager, adopt Swift 6 language mode (iOS 13+ minimum deployment target). Example app graph now sizes itself to the current view bounds (fixes clipping on iPad portrait) and starts at an angle that keeps the first/last data sectors mirror-symmetric about the bottom of the circle
 * v0.3.0: Convert to Swift 5 & iOS 13+
 * v0.2.1: Convert to Swift 3.0
@@ -63,6 +99,14 @@ Invoked before each sector rendering
 Invoked after each sector rendering
 
     func didDisplaySector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int)
+
+Invoked when the user taps a sector (opt-in, defaults to a no-op)
+
+    func didSelectSector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int)
+
+Invoked when the user taps within the graph but outside any sector - e.g. an empty gap, or past a wedge's actual tip (opt-in, defaults to a no-op)
+
+    func didTapOutsideSector(_ graphView: CHRadarGraphView)
 
 ###DataSource methods:
 
@@ -101,6 +145,14 @@ Stroke colors and line widths:
     func strokeWidthOfRings(_ graphView: CHRadarGraphView) -> CGFloat
     func strokeColorOfSectorLines(_ graphView: CHRadarGraphView) -> UIColor
     func strokeWidthOfSectorLines(_ graphView: CHRadarGraphView) -> CGFloat
+
+A title for the whole chart, drawn in the empty gap left when `numberOfDataSectors` is fewer than `numberOfSectors` (opt-in, defaults to `nil`)
+
+    func graphDescription(_ graphView: CHRadarGraphView) -> String?
+
+A label for a specific ring, drawn in that same empty gap (opt-in, defaults to `nil`)
+
+    func ringLabel(_ graphView: CHRadarGraphView, forRingIndex index: Int) -> String?
 
 ![alt text](http://i.imgur.com/PYd1AMS.png?1 "Radar Graph Explained")
 

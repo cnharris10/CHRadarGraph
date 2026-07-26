@@ -7,9 +7,24 @@
 //
 
 import UIKit
+import SwiftUI
 import CHRadarGraph
 
 class ViewController: UIViewController {
+
+    // Presents SwiftUIDemoView, which uses the CHRadarGraph SwiftUI wrapper
+    // instead of this screen's own delegate/dataSource conformance below.
+    private let swiftUIDemoButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("SwiftUI Demo", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        button.backgroundColor = UIColor(red: 28/255, green: 92/255, blue: 171/255, alpha: 1)
+        button.layer.cornerRadius = 8
+        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 14, bottom: 8, right: 14)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
 
     var sectorData: CHSectorDataCollection<CHSectorData>?
     var graph: CHRadarGraphView?
@@ -18,8 +33,57 @@ class ViewController: UIViewController {
     // resolves at finer radial granularity.
     private let maxSectorHeight: CGFloat = 40
 
+    // Visible feedback for tap-to-select / VoiceOver activation - without
+    // this, selecting a sector would only be observable in the console.
+    // Draggable (see handleSelectionLabelPan) rather than pinned to a fixed
+    // spot, so it's frame-based instead of Auto Layout-positioned - a pinned
+    // constraint would just snap it back after every drag.
+    // Hidden until the first selection - nothing to show or drag before then.
+    private let selectionLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = UIColor(white: 0.3, alpha: 1)
+        label.numberOfLines = 2
+        label.backgroundColor = UIColor(white: 1, alpha: 0.9)
+        label.layer.cornerRadius = 8
+        label.clipsToBounds = true
+        label.isUserInteractionEnabled = true // UILabel defaults this to false
+        label.isHidden = true
+        return label
+    }()
+    private var didPositionSelectionLabel = false
+
+    private enum SelectionLabelPlacement {
+        case aboveGraph
+        case belowTitle
+    }
+    // Default: sits above the whole drawn circle, clear of every wedge.
+    // Switch to .belowTitle to instead start it beneath graphDescription's
+    // text - either way it's still draggable afterward.
+    private let selectionLabelPlacement: SelectionLabelPlacement = .aboveGraph
+
+    // Catches taps that land outside the graph's own view entirely (its
+    // frame only covers the drawn circle's bounding box, not the whole
+    // screen) - didTapOutsideSector only fires for taps within that frame
+    // that miss a sector (the empty gap, or past a wedge's tip). Needs a
+    // delegate so it doesn't also fire for taps that landed on the graph or
+    // the label themselves, which already have their own recognizers.
+    private let backgroundTapRecognizer = UITapGestureRecognizer()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.addSubview(selectionLabel)
+        selectionLabel.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handleSelectionLabelPan(_:))))
+        backgroundTapRecognizer.addTarget(self, action: #selector(handleBackgroundTap(_:)))
+        backgroundTapRecognizer.delegate = self
+        view.addGestureRecognizer(backgroundTapRecognizer)
+        view.addSubview(swiftUIDemoButton)
+        swiftUIDemoButton.addTarget(self, action: #selector(presentSwiftUIDemo), for: .touchUpInside)
+        NSLayoutConstraint.activate([
+            swiftUIDemoButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+            swiftUIDemoButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
         // Same 36 time slots as before (7am - 4pm, 15-min steps); heights are
         // the original 1-10 pattern scaled onto the finer 1-40 range so the
         // chart's shape is unchanged but now resolved across 4x as many rings.
@@ -69,52 +133,89 @@ class ViewController: UIViewController {
         guard view.bounds.size != lastLayoutSize, view.bounds.size != .zero else { return }
         lastLayoutSize = view.bounds.size
         setUpGraph()
+
+        // Only place it once - after that its position is whatever the user
+        // dragged it to, and a rotation/relayout shouldn't reset that.
+        if !didPositionSelectionLabel {
+            didPositionSelectionLabel = true
+            let width = view.bounds.width - 40
+            let height: CGFloat = 44
+            switch selectionLabelPlacement {
+            case .aboveGraph:
+                let origin = aboveGraphOrigin(width: width, height: height)
+                selectionLabel.frame = CGRect(x: origin.x, y: origin.y, width: width, height: height)
+            case .belowTitle:
+                let origin = belowTitleOrigin(width: width)
+                selectionLabel.frame = CGRect(x: origin.x, y: origin.y, width: width, height: height)
+            }
+        }
     }
 
-    // What the chart's height/color encodes. Anyone embedding CHRadarGraphView
-    // can set this to describe their own data; the Example sets it to
-    // demonstrate the pattern.
-    var graphDescription: String? = "Number of GitHub PR's created"
+    // Just above the topmost point of the drawn circle (centerOfGraph.y -
+    // radiusOfGraph), clear of every wedge and every sector's time label.
+    // Those labels sit at radius + 30 (see CHRadarGraphView's drawPieChart),
+    // not radius itself, so the margin has to clear that offset plus the
+    // label text's own height, or it just overlaps the ring of time labels
+    // near the top instead. Not the view's own safe area top, which could
+    // sit well above or below the graph depending on how much of the screen
+    // it fills.
+    private func aboveGraphOrigin(width: CGFloat, height: CGFloat) -> CGPoint {
+        guard let g = graph else { return CGPoint(x: 20, y: view.safeAreaInsets.top + 12) }
+        let graphCenter = centerOfGraph(g)
+        let graphRadius = radiusOfGraph(g)
+        let margin: CGFloat = 30 + 20 + 12
+        let y = max(view.safeAreaInsets.top + 12, graphCenter.y - graphRadius - height - margin)
+        return CGPoint(x: (view.bounds.width - width) / 2, y: y)
+    }
+
+    // Mirrors CHRadarGraphView's own placement of graphDescription (radius *
+    // 0.6 along the empty gap's center direction) so this tracks wherever
+    // the library actually draws that text, rather than a hardcoded guess.
+    private func belowTitleOrigin(width: CGFloat) -> CGPoint {
+        guard let g = graph else { return CGPoint(x: 20, y: view.safeAreaInsets.top + 12) }
+        let graphCenter = centerOfGraph(g)
+        let graphRadius = radiusOfGraph(g)
+        let sectorsCount = CGFloat(numberOfSectors(g))
+        let dataCount = CGFloat(numberOfDataSectors(g))
+        let startAngle = startingAngleInDegrees(g) * .pi / 180
+        let dataSweep = dataCount * (2 * .pi / sectorsCount)
+        let gapCenterAngle = startAngle + dataSweep / 2 + .pi
+
+        let titleRadius = graphRadius * 0.6
+        let titleCenter = CGPoint(
+            x: graphCenter.x + titleRadius * cos(gapCenterAngle),
+            y: graphCenter.y + titleRadius * sin(gapCenterAngle)
+        )
+        return CGPoint(x: titleCenter.x - width / 2, y: titleCenter.y + 40)
+    }
+
+    @objc private func handleSelectionLabelPan(_ gesture: UIPanGestureRecognizer) {
+        guard let label = gesture.view else { return }
+        let translation = gesture.translation(in: view)
+        label.center = CGPoint(x: label.center.x + translation.x, y: label.center.y + translation.y)
+        gesture.setTranslation(.zero, in: view)
+    }
+
+    @objc private func handleBackgroundTap(_ gesture: UITapGestureRecognizer) {
+        selectionLabel.isHidden = true
+    }
+
+    @objc private func presentSwiftUIDemo() {
+        guard #available(iOS 14.0, *) else { return }
+        let hosting = UIHostingController(rootView: NavigationView { SwiftUIDemoView() })
+        present(hosting, animated: true)
+    }
 
     private func setUpGraph() {
         graph?.view.removeFromSuperview()
         graph = CHRadarGraphView(delegate: self, dataSource: self)
         view.addSubview(graph!.view)
         graph!.reload()
-        addDescriptionLabel(to: graph!)
-    }
-
-    // The chart's data spans fewer sectors than numberOfSectors, leaving an
-    // empty, widening wedge of dead space centered at the bottom of the
-    // circle (see startingAngleInDegrees). graphDescription is placed well
-    // down into that wedge - both for clearance from the wedges near the
-    // center and because the wedge is widest there - and its width is capped
-    // to what's actually free at that distance from center, so long text
-    // wraps instead of overlapping a wedge.
-    private func addDescriptionLabel(to graph: CHRadarGraphView) {
-        guard let text = graphDescription else { return }
-        let center = centerOfGraph(graph)
-        let radius = radiusOfGraph(graph)
-
-        let sectorsCount = CGFloat(numberOfSectors(graph))
-        let dataCount = CGFloat(numberOfDataSectors(graph))
-        let gapHalfAngleRadians = (CGFloat.pi / 180) * (360 - dataCount * (360 / sectorsCount)) / 2
-
-        let verticalOffset = radius * 0.6
-        let availableWidth = 2 * verticalOffset * tan(gapHalfAngleRadians) * 0.85
-
-        let label = UILabel()
-        label.text = text
-        label.font = UIFont.systemFont(ofSize: 13 * 1.5)
-        label.textColor = UIColor(white: 0.4, alpha: 1)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        let width = min(radius * 1.1, availableWidth)
-        label.frame = CGRect(x: 0, y: 0, width: width, height: 0)
-        label.sizeToFit()
-        label.frame.size.width = width
-        label.center = CGPoint(x: center.x, y: center.y + verticalOffset)
-        graph.view.addSubview(label)
+        // Every relayout re-adds the graph's view, which - added after
+        // selectionLabel back in viewDidLoad - would otherwise sit on top of
+        // it in z-order every time, hiding the label whenever they overlap
+        // (guaranteed with the default .overRadarChart placement).
+        view.bringSubviewToFront(selectionLabel)
     }
 
     // Sector height is a magnitude, not a category, so it's encoded as one hue
@@ -201,6 +302,10 @@ extension ViewController: CHRadarGraphViewDataSource {
         return 1.0
     }
 
+    func graphDescription(_ graphView: CHRadarGraphView) -> String? {
+        return "Number of GitHub PR's created"
+    }
+
     func sectorCellForPositionAtIndex(_ graph: CHRadarGraphView, index: Int) -> CHSectorCell? {
         guard let data = sectorData?[index] else { return nil }
         let height = data.height
@@ -235,5 +340,37 @@ extension ViewController: CHRadarGraphViewDelegate {
     func didDisplaySector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
         print("Sector did display! - graph: \(graphView), sector: \(sector), index: \(index)")
     }
-    
+
+    func didSelectSector(_ graphView: CHRadarGraphView, sector: CHSectorCell, index: Int) {
+        print("Sector selected (tap or VoiceOver activation) - label: \(sector.label?.text ?? ""), height: \(sector.height)")
+        let label = sector.label?.text ?? "sector \(index)"
+        selectionLabel.text = "\(Int(sector.height)) PR's created at \(label)"
+        selectionLabel.isHidden = false
+    }
+
+    // Tapped within the graph's bounds but not on any drawn sector - the
+    // empty gap, or past a short wedge's actual tip.
+    func didTapOutsideSector(_ graphView: CHRadarGraphView) {
+        selectionLabel.isHidden = true
+    }
+
+}
+
+extension ViewController: UIGestureRecognizerDelegate {
+
+    // Only let backgroundTapRecognizer handle touches that land outside
+    // both the graph's view and the (visible) selection label - each of
+    // those already has its own recognizer for taps that land on them.
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard gestureRecognizer === backgroundTapRecognizer else { return true }
+        let point = touch.location(in: view)
+        if let graphView = graph?.view, graphView.frame.contains(point) {
+            return false
+        }
+        if !selectionLabel.isHidden, selectionLabel.frame.contains(point) {
+            return false
+        }
+        return true
+    }
+
 }
