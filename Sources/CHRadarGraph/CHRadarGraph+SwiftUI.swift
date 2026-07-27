@@ -44,11 +44,23 @@ public struct CHRadarGraph: UIViewRepresentable {
         public var label: String?
         /// The sector's fill color.
         public var color: Color
+        /// The label's text color. `nil` (the default) uses black.
+        public var labelColor: Color?
+        /// Whether the label is drawn in bold.
+        public var labelIsBold: Bool
+        /// The label's font size, in points. `nil` (the default) uses 12.
+        public var labelFontSize: CGFloat?
 
-        public init(height: CGFloat, label: String? = nil, color: Color) {
+        public init(
+            height: CGFloat, label: String? = nil, color: Color,
+            labelColor: Color? = nil, labelIsBold: Bool = false, labelFontSize: CGFloat? = nil
+        ) {
             self.height = height
             self.label = label
             self.color = color
+            self.labelColor = labelColor
+            self.labelIsBold = labelIsBold
+            self.labelFontSize = labelFontSize
         }
     }
 
@@ -83,6 +95,10 @@ public struct CHRadarGraph: UIViewRepresentable {
     /// A title drawn in the empty gap left when `totalSectorSlots` is larger
     /// than `sectors.count`. `nil` (the default) draws nothing.
     public var title: String?
+    /// The title's text color. Defaults to a mid-gray.
+    public var titleColor: Color
+    /// The title's font size, in points. Defaults to 22.5.
+    public var titleFontSize: CGFloat
     /// Called when a sector is selected, via tap or VoiceOver activation.
     public var onSelect: ((Sector, Int) -> Void)?
     /// Called when a tap lands within the graph but doesn't correspond to
@@ -100,6 +116,8 @@ public struct CHRadarGraph: UIViewRepresentable {
         ringColor: Color = Color(white: 0.93),
         sectorLineColor: Color = Color(white: 0.93),
         title: String? = nil,
+        titleColor: Color = Color(white: 0.4),
+        titleFontSize: CGFloat = 22.5,
         onSelect: ((Sector, Int) -> Void)? = nil,
         onDeselectAll: (() -> Void)? = nil
     ) {
@@ -112,6 +130,8 @@ public struct CHRadarGraph: UIViewRepresentable {
         self.ringColor = ringColor
         self.sectorLineColor = sectorLineColor
         self.title = title
+        self.titleColor = titleColor
+        self.titleFontSize = titleFontSize
         self.onSelect = onSelect
         self.onDeselectAll = onDeselectAll
     }
@@ -159,8 +179,41 @@ public struct CHRadarGraph: UIViewRepresentable {
         weak var container: UIView?
         private var graph: CHRadarGraphView?
         private var lastSize: CGSize = .zero
-        private var lastSectors: [Sector] = []
-        private var lastTotalSectorSlots: Int?
+        private var lastRenderState: RenderState?
+
+        // Every property of `parent` that affects what actually gets drawn -
+        // used to detect real changes without depending on CHRadarGraph
+        // itself being Equatable (it can't be: onSelect/onDeselectAll are
+        // closures). Previously only sectors/totalSectorSlots were compared,
+        // so changing title, numberOfRings, startingAngleInDegrees,
+        // maxHeight, or any of the three colors silently never redrew -
+        // updateUIView always refreshes `parent` itself, but rebuildIfNeeded
+        // (the only thing that actually recreates and reloads the
+        // underlying CHRadarGraphView) never noticed.
+        private struct RenderState: Equatable {
+            var sectors: [Sector]
+            var totalSectorSlots: Int?
+            var maxHeight: CGFloat?
+            var numberOfRings: Int
+            var startingAngleInDegrees: CGFloat
+            var backgroundColor: Color
+            var ringColor: Color
+            var sectorLineColor: Color
+            var title: String?
+            var titleColor: Color
+            var titleFontSize: CGFloat
+        }
+
+        private var currentRenderState: RenderState {
+            RenderState(
+                sectors: parent.sectors, totalSectorSlots: parent.totalSectorSlots,
+                maxHeight: parent.maxHeight, numberOfRings: parent.numberOfRings,
+                startingAngleInDegrees: parent.startingAngleInDegrees,
+                backgroundColor: parent.backgroundColor, ringColor: parent.ringColor,
+                sectorLineColor: parent.sectorLineColor, title: parent.title,
+                titleColor: parent.titleColor, titleFontSize: parent.titleFontSize
+            )
+        }
 
         fileprivate init(parent: CHRadarGraph) {
             self.parent = parent
@@ -169,18 +222,18 @@ public struct CHRadarGraph: UIViewRepresentable {
         // updateUIView runs on every SwiftUI re-render, most of which have
         // nothing to do with this graph - only actually rebuild (recreate
         // the CHRadarGraphView and redraw) when the size changed or the
-        // data actually did, same as CHRadarGraphView's own consumers do by
-        // hand in viewDidLayoutSubviews.
+        // rendered state actually did, same as CHRadarGraphView's own
+        // consumers do by hand in viewDidLayoutSubviews.
         // internal (not fileprivate) so tests and ContainerView's layout
         // hook can both call this directly.
         func rebuildIfNeeded() {
             guard let container, container.bounds.size != .zero else { return }
+            let renderState = currentRenderState
             let sizeChanged = container.bounds.size != lastSize
-            let dataChanged = parent.sectors != lastSectors || parent.totalSectorSlots != lastTotalSectorSlots
+            let dataChanged = renderState != lastRenderState
             guard sizeChanged || dataChanged else { return }
             lastSize = container.bounds.size
-            lastSectors = parent.sectors
-            lastTotalSectorSlots = parent.totalSectorSlots
+            lastRenderState = renderState
 
             graph?.view.removeFromSuperview()
             let newGraph = CHRadarGraphView(delegate: self, dataSource: self)
@@ -226,7 +279,13 @@ public struct CHRadarGraph: UIViewRepresentable {
         public func sectorCellForPositionAtIndex(_ graph: CHRadarGraphView, index: Int) -> CHSectorCell? {
             guard index >= 0, index < parent.sectors.count else { return nil }
             let sector = parent.sectors[index]
-            let label = sector.label.map { CHSectorLabel(text: $0) }
+            let label = sector.label.map {
+                CHSectorLabel(
+                    text: $0, isBold: sector.labelIsBold,
+                    color: sector.labelColor.map { UIColor($0).cgColor } ?? UIColor.black.cgColor,
+                    fontSize: sector.labelFontSize ?? 12
+                )
+            }
             return CHSectorCell(height: sector.height, backgroundColor: UIColor(sector.color).cgColor, label: label)
         }
 
@@ -248,6 +307,14 @@ public struct CHRadarGraph: UIViewRepresentable {
 
         public func graphDescription(_ graphView: CHRadarGraphView) -> String? {
             parent.title
+        }
+
+        public func graphDescriptionColor(_ graphView: CHRadarGraphView) -> UIColor {
+            UIColor(parent.titleColor)
+        }
+
+        public func graphDescriptionFont(_ graphView: CHRadarGraphView) -> UIFont {
+            .systemFont(ofSize: parent.titleFontSize)
         }
 
         // MARK: - CHRadarGraphViewDelegate

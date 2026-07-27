@@ -41,11 +41,13 @@ struct ContentView: View {
     var body: some View {
         CHRadarGraph(
             sectors: [
-                .init(height: 3, label: "Mon", color: .blue),
+                .init(height: 3, label: "Mon", color: .blue, labelColor: .primary, labelIsBold: true, labelFontSize: 14),
                 .init(height: 7, label: "Tue", color: .blue),
                 .init(height: 5, label: "Wed", color: .blue)
             ],
             title: "PRs created",
+            titleColor: .secondary,
+            titleFontSize: 20,
             onSelect: { sector, index in
                 selected = "\(Int(sector.height)) on \(sector.label ?? "")"
             },
@@ -60,10 +62,12 @@ struct ContentView: View {
 
 `CHRadarGraph` wraps a plain `UIView` with no intrinsic content size, so SwiftUI will collapse it to zero size unless you give it an explicit frame (as above) or place it somewhere that already constrains its size, e.g. inside a fixed-height container.
 
+Each `Sector`'s label can be styled independently via `labelColor`, `labelIsBold`, and `labelFontSize` (all optional, defaulting to black/non-bold/12pt); the title is styled via `titleColor` and `titleFontSize` (defaulting to a mid-gray/22.5pt).
+
 This covers the common case (one title, a fixed gap, no per-ring labels) - reach for `CHRadarGraphView` directly (see the Example target) for anything it doesn't cover, such as ring labels or a custom gap-centering angle.
 
 ## Changelog
-* v0.5.0: Add VoiceOver accessibility, tap-to-select sectors (`didSelectSector`/`didTapOutsideSector` delegate callbacks), a chart description label, a SwiftUI wrapper (`CHRadarGraph`) so SwiftUI consumers don't need to implement the UIKit delegate/dataSource protocols, automatic redraw on light/dark mode changes, and DocC documentation
+* v0.5.0: Add VoiceOver accessibility, tap-to-select sectors (`didSelectSector`/`didTapOutsideSector` delegate callbacks), a chart description label, a SwiftUI wrapper (`CHRadarGraph`) so SwiftUI consumers don't need to implement the UIKit delegate/dataSource protocols, automatic redraw on light/dark mode changes, DocC documentation, and customizable title/label colors, fonts, and sizes
 * v0.4.0: Convert to Swift Package Manager, adopt Swift 6 language mode (iOS 13+ minimum deployment target). Example app graph now sizes itself to the current view bounds (fixes clipping on iPad portrait) and starts at an angle that keeps the first/last data sectors mirror-symmetric about the bottom of the circle
 * v0.3.0: Convert to Swift 5 & iOS 13+
 * v0.2.1: Convert to Swift 3.0
@@ -149,10 +153,16 @@ Stroke colors and line widths:
 A title for the whole chart, drawn in the empty gap left when `numberOfDataSectors` is fewer than `numberOfSectors` (opt-in, defaults to `nil`)
 
     func graphDescription(_ graphView: CHRadarGraphView) -> String?
+    func graphDescriptionFont(_ graphView: CHRadarGraphView) -> UIFont // opt-in, defaults to a 22.5pt system font
+    func graphDescriptionColor(_ graphView: CHRadarGraphView) -> UIColor // opt-in, defaults to a mid-gray
 
 A label for a specific ring, drawn in that same empty gap (opt-in, defaults to `nil`)
 
     func ringLabel(_ graphView: CHRadarGraphView, forRingIndex index: Int) -> String?
+    func ringLabelFont(_ graphView: CHRadarGraphView) -> UIFont // opt-in, defaults to an 11pt system font
+    func ringLabelColor(_ graphView: CHRadarGraphView) -> UIColor // opt-in, defaults to a light gray
+
+Per-sector labels (e.g. "7am", "7:15") get their color, boldness, and font size from the `CHSectorLabel` returned by `sectorCellForPositionAtIndex` - `CHSectorLabel(text:isBold:color:fontSize:)`, defaulting to black, non-bold, 12pt.
 
 ![alt text](http://i.imgur.com/PYd1AMS.png?1 "Radar Graph Explained")
 

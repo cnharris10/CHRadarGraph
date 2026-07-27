@@ -95,12 +95,31 @@ public protocol CHRadarGraphViewDataSource: AnyObject {
     /// "20" to mark the height scale. Opt-in - returning `nil` for a given
     /// index (the default) skips that ring's label.
     func ringLabel(_ graphView: CHRadarGraphView, forRingIndex index: Int) -> String?
+
+    /// The font for ``graphDescription(_:)``. Opt-in - defaults to a 22.5pt
+    /// system font.
+    func graphDescriptionFont(_ graphView: CHRadarGraphView) -> UIFont
+    /// The text color for ``graphDescription(_:)``. Opt-in - defaults to a
+    /// mid-gray.
+    func graphDescriptionColor(_ graphView: CHRadarGraphView) -> UIColor
+
+    /// The font for ``ringLabel(_:forRingIndex:)``. Opt-in - defaults to an
+    /// 11pt system font.
+    func ringLabelFont(_ graphView: CHRadarGraphView) -> UIFont
+    /// The text color for ``ringLabel(_:forRingIndex:)``. Opt-in - defaults
+    /// to a light gray.
+    func ringLabelColor(_ graphView: CHRadarGraphView) -> UIColor
 }
 
-// Both are opt-in: existing conformers get no axis labels, same as before.
+// All opt-in: existing conformers get no axis labels and the original
+// hardcoded styling, same as before.
 public extension CHRadarGraphViewDataSource {
     func graphDescription(_ graphView: CHRadarGraphView) -> String? { nil }
     func ringLabel(_ graphView: CHRadarGraphView, forRingIndex index: Int) -> String? { nil }
+    func graphDescriptionFont(_ graphView: CHRadarGraphView) -> UIFont { .systemFont(ofSize: 22.5) }
+    func graphDescriptionColor(_ graphView: CHRadarGraphView) -> UIColor { UIColor(white: 0.4, alpha: 1) }
+    func ringLabelFont(_ graphView: CHRadarGraphView) -> UIFont { .systemFont(ofSize: 11) }
+    func ringLabelColor(_ graphView: CHRadarGraphView) -> UIColor { UIColor(white: 0.55, alpha: 1) }
 }
 
 /// A radar (rose/polar) chart: a circle divided into sectors, each drawn out
@@ -360,18 +379,18 @@ public struct CHRadarGraphView {
         }
 
         if numberOfRings > 0 {
+            let ringFont = dataSource.ringLabelFont(self)
+            let ringColor = dataSource.ringLabelColor(self)
             for index in 1...numberOfRings {
                 guard let text = dataSource.ringLabel(self, forRingIndex: index) else { continue }
                 let ringRadius = (CGFloat(index) / CGFloat(numberOfRings)) * radius
-                addLabel(text, center: point(atRadius: ringRadius), width: availableWidth(atRadius: ringRadius), font: .systemFont(ofSize: 11), color: UIColor(white: 0.55, alpha: 1))
+                addLabel(text, center: point(atRadius: ringRadius), width: availableWidth(atRadius: ringRadius), font: ringFont, color: ringColor)
             }
         }
 
         if let description = dataSource.graphDescription(self) {
             let descriptionRadius = radius * 0.6
-            // 1.5x a 15pt reference size (22.5pt) - noticeably more
-            // title-like than the 13pt it started at.
-            addLabel(description, center: point(atRadius: descriptionRadius), width: min(radius * 1.1, availableWidth(atRadius: descriptionRadius)), font: .systemFont(ofSize: 22.5), color: UIColor(white: 0.4, alpha: 1))
+            addLabel(description, center: point(atRadius: descriptionRadius), width: min(radius * 1.1, availableWidth(atRadius: descriptionRadius)), font: dataSource.graphDescriptionFont(self), color: dataSource.graphDescriptionColor(self))
         }
     }
 
@@ -443,9 +462,10 @@ public struct CHRadarGraphView {
             // white in dark mode and would go invisible against a sector
             // background that a consumer has drawn with static light colors.
             label.textColor = sectorCell.label?.color.map { UIColor(cgColor: $0) } ?? .black
+            let sectorLabelFontSize = sectorCell.label?.fontSize ?? 12.0
             label.font = sectorCell.label?.isBold == true
-                ? .boldSystemFont(ofSize: 12.0)
-                : .systemFont(ofSize: 12.0)
+                ? .boldSystemFont(ofSize: sectorLabelFontSize)
+                : .systemFont(ofSize: sectorLabelFontSize)
             label.sizeToFit()
             label.layer.anchorPoint = CGPoint(x: 0, y: 0)
             view.addSubview(label)

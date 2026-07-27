@@ -1,5 +1,6 @@
 import XCTest
 import UIKit
+import SwiftUI
 @testable import CHRadarGraph
 
 @MainActor
@@ -11,6 +12,9 @@ private final class FakeGraphSource: CHRadarGraphViewDataSource, CHRadarGraphVie
     var radius: CGFloat = 100
     var largestHeight: CGFloat = 10
     var labels: [CHSectorLabel?]?
+    var title: String?
+    var titleColor: UIColor?
+    var titleFont: UIFont?
 
     init(heights: [CGFloat], sectorsCount: Int? = nil) {
         self.heights = heights
@@ -33,6 +37,9 @@ private final class FakeGraphSource: CHRadarGraphViewDataSource, CHRadarGraphVie
     func strokeWidthOfRings(_ graphView: CHRadarGraphView) -> CGFloat { 1 }
     func strokeColorOfSectorLines(_ graphView: CHRadarGraphView) -> UIColor { .gray }
     func strokeWidthOfSectorLines(_ graphView: CHRadarGraphView) -> CGFloat { 1 }
+    func graphDescription(_ graphView: CHRadarGraphView) -> String? { title }
+    func graphDescriptionColor(_ graphView: CHRadarGraphView) -> UIColor { titleColor ?? UIColor(white: 0.4, alpha: 1) }
+    func graphDescriptionFont(_ graphView: CHRadarGraphView) -> UIFont { titleFont ?? .systemFont(ofSize: 22.5) }
 
     func willDisplayGraph(_ graphView: CHRadarGraphView) {}
     func didDisplayGraph(_ graphView: CHRadarGraphView) {}
@@ -75,6 +82,15 @@ final class CHRadarGraphTests: XCTestCase {
         XCTAssertEqual(collection[0]?.label, "7am")
         XCTAssertEqual(collection[1]?.label, "8am")
         XCTAssertNil(collection[2])
+    }
+
+    // A negative index passed the `index < count` half of the bounds check
+    // (any negative number is less than a positive count) straight through
+    // to `data[index]`, which traps instead of returning nil like every
+    // other out-of-range index does.
+    func testSectorDataCollectionSubscriptRejectsNegativeIndexInsteadOfCrashing() {
+        let collection = CHSectorDataCollection([CHSectorData(1, "7am")])
+        XCTAssertNil(collection[-1])
     }
 
     // MARK: - Sector hit-testing (tap-to-select geometry)
@@ -177,6 +193,23 @@ final class CHRadarGraphTests: XCTestCase {
 
         let label = graph.view.subviews.compactMap { $0 as? UILabel }.first
         XCTAssertEqual(label?.textColor, .black)
+    }
+
+    // graphDescriptionColor/graphDescriptionFont are opt-in dataSource
+    // methods (added alongside title/label customization) - confirms
+    // drawAxisLabels() actually reads them instead of the hardcoded
+    // defaults it used before they existed.
+    func testGraphDescriptionUsesCustomColorAndFont() {
+        let source = FakeGraphSource(heights: [10, 5], sectorsCount: 4)
+        source.title = "Custom Title"
+        source.titleColor = .red
+        source.titleFont = .boldSystemFont(ofSize: 30)
+        let graph = CHRadarGraphView(delegate: source, dataSource: source)
+        graph.reload()
+
+        let label = graph.view.subviews.compactMap { $0 as? UILabel }.first { $0.text == "Custom Title" }
+        XCTAssertEqual(label?.textColor, .red)
+        XCTAssertEqual(label?.font, .boldSystemFont(ofSize: 30))
     }
 
     // MARK: - Regression tests for the review findings fixed in this commit
@@ -314,6 +347,51 @@ final class CHRadarGraphTests: XCTestCase {
         XCTAssertEqual(cell?.label?.text, "B")
     }
 
+    // Sector.labelColor/labelIsBold/labelFontSize (added alongside title
+    // customization) must actually reach the CHSectorLabel built for each
+    // cell, not just the wedge's own fill color.
+    @available(iOS 14.0, *)
+    func testSwiftUISectorLabelStylingReachesTheBuiltCell() {
+        let sectors = [
+            CHRadarGraph.Sector(height: 5, label: "A", color: .blue, labelColor: .green, labelIsBold: true, labelFontSize: 20)
+        ]
+        let view = CHRadarGraph(sectors: sectors)
+        let coordinator = view.makeCoordinator()
+        coordinator.container = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+        let graph = CHRadarGraphView(delegate: coordinator, dataSource: coordinator)
+
+        let cell = coordinator.sectorCellForPositionAtIndex(graph, index: 0)
+        // Compared against UIColor(Color.green), not UIKit's own .green -
+        // SwiftUI's Color.green bridges to a perceptually-tuned green, not
+        // the (0, 1, 0) primary UIColor.green is.
+        XCTAssertEqual(cell?.label?.color, UIColor(Color.green).cgColor)
+        XCTAssertEqual(cell?.label?.isBold, true)
+        XCTAssertEqual(cell?.label?.fontSize, 20)
+    }
+
+    // titleColor/titleFontSize (added alongside per-sector label styling)
+    // must actually reach the drawn title label via
+    // graphDescriptionColor/graphDescriptionFont.
+    @available(iOS 14.0, *)
+    func testSwiftUITitleStylingIsAppliedToTheDrawnLabel() {
+        let sectors = [CHRadarGraph.Sector(height: 5, color: .blue)]
+        let view = CHRadarGraph(
+            sectors: sectors, totalSectorSlots: 4, title: "Custom Title",
+            titleColor: .red, titleFontSize: 30
+        )
+        let coordinator = view.makeCoordinator()
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+        coordinator.container = container
+        coordinator.rebuildIfNeeded()
+
+        let label = container.subviews.first?.subviews.compactMap { $0 as? UILabel }.first { $0.text == "Custom Title" }
+        // Compared against UIColor(Color.red), not UIKit's own .red -
+        // SwiftUI's Color.red bridges to the dynamic system-red color, not
+        // the static (1, 0, 0) UIColor.red is.
+        XCTAssertEqual(label?.textColor, UIColor(Color.red))
+        XCTAssertEqual(label?.font, .systemFont(ofSize: 30))
+    }
+
     @available(iOS 14.0, *)
     func testSwiftUICoordinatorRespectsExplicitTotalSectorSlots() {
         let sectors = [CHRadarGraph.Sector(height: 5, color: .blue)]
@@ -365,5 +443,34 @@ final class CHRadarGraphTests: XCTestCase {
         container.layoutIfNeeded()
 
         XCTAssertEqual(container.subviews.count, 1, "the first real layout pass should have prompted the coordinator to build and add the graph's view")
+    }
+
+    // DIAGNOSTIC: rebuildIfNeeded() only rebuilds when the container's size
+    // changes or `sectors`/`totalSectorSlots` change - every other property
+    // (title, numberOfRings, startingAngleInDegrees, maxHeight, and all
+    // three colors) is silently ignored, so a SwiftUI consumer who only
+    // changes one of those would see the graph never update.
+    @available(iOS 14.0, *)
+    func testRebuildIfNeededPicksUpATitleChangeWithNoOtherPropertyChanging() {
+        let sectors = [CHRadarGraph.Sector(height: 5, color: .blue)]
+        var view = CHRadarGraph(sectors: sectors, totalSectorSlots: 4)
+        let coordinator = view.makeCoordinator()
+        // container is a `weak var` on Coordinator (matching how a real
+        // UIViewRepresentable-managed view is owned by SwiftUI, not by the
+        // Coordinator) - it must be kept alive by a local strong reference
+        // for the length of the test, or it deallocates the instant it's
+        // assigned and every container-dependent call below silently no-ops.
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+        coordinator.container = container
+        coordinator.parent = view
+        coordinator.rebuildIfNeeded()
+        let subviewCountWithNoTitle = container.subviews.first?.subviews.count ?? -1
+
+        view.title = "New Title"
+        coordinator.parent = view
+        coordinator.rebuildIfNeeded()
+        let subviewCountWithTitle = container.subviews.first?.subviews.count ?? -1
+
+        XCTAssertGreaterThan(subviewCountWithTitle, subviewCountWithNoTitle, "adding a title should draw a label for it, even though sectors/totalSectorSlots never changed")
     }
 }

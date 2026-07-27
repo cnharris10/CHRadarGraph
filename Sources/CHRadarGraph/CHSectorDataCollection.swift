@@ -30,7 +30,7 @@ public struct CHSectorDataCollection<T>: CHSectorDataCollectionProtocol {
     /// Returns the data point at `index`, or `nil` if `index` is out of range.
     public subscript(index: Int) -> T? {
         get {
-            return index < count ? data[index] : nil
+            return index >= 0 && index < count ? data[index] : nil
         }
     }
 
